@@ -1,14 +1,15 @@
 {
   "expo": {
+    "scheme": "september",
     "name": "september-app",
     "slug": "september-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/app-icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/app-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -20,10 +21,22 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": [],
+"package": "com.septemberapp"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
-    }
+      "favicon": "./assets/app-icon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "react-native-video"
+    ],
+    "fonts": [
+      "node_modules/@expo-google-fonts/poppins/Poppins_400Regular.ttf",
+      "node_modules/@expo-google-fonts/poppins/Poppins_500Medium.ttf",
+      "node_modules/@expo-google-fonts/poppins/Poppins_600SemiBold.ttf",
+      "node_modules/@expo-google-fonts/poppins/Poppins_700Bold.ttf"
+    ]
   }
 }
