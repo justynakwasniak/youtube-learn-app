@@ -13,6 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import Footer from '../components/Footer';
+import { apiService } from '../utils/api';
 
 // Mock data dla wyszukiwania z kategoriami
 const mockSearchResults = [
@@ -48,24 +49,45 @@ const SearchScreen = () => {
   useEffect(() => {
     if (query || category) {
       const searchTerm = Array.isArray(query) ? query[0] : query || Array.isArray(category) ? category[0] : category;
-      performSearch(searchTerm);
+      if (searchTerm) {
+        performSearch(searchTerm);
+      }
     }
   }, [query, category]);
 
   const performSearch = async (searchTerm: string) => {
+    if (!searchTerm || typeof searchTerm !== 'string') {
+      return;
+    }
+    
     setIsLoading(true);
     
-    // Symulacja opóźnienia API
-    setTimeout(() => {
-      // Zawsze pokazuj dokładnie 2 filmy, niezależnie od wyszukiwania
+    try {
+      const results = await apiService.searchVideos(searchTerm, selectedSortOption) as any;
+      
+      // Konwertuj wyniki YouTube API na format aplikacji
+      const formattedResults = results.items?.map((item: any, index: number) => ({
+        id: item.id.videoId,
+        title: item.snippet.title,
+        thumbnail: item.snippet.thumbnails.medium?.url || item.snippet.thumbnails.default?.url,
+        views: 'N/A', // YouTube API nie zwraca views w search
+        duration: 'N/A', // YouTube API nie zwraca duration w search
+        category: item.snippet.channelTitle
+      })) || [];
+      
+      setSearchResults(formattedResults);
+    } catch (error) {
+      console.error('Search error:', error);
+      // Fallback do mock data w przypadku błędu
       setSearchResults(mockSearchResults.slice(0, 2));
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const handleSearch = () => {
     const trimmedQuery = typeof searchQuery === 'string' ? searchQuery.trim() : '';
-    if (trimmedQuery) {
+    if (trimmedQuery && trimmedQuery.length > 0) {
       performSearch(trimmedQuery);
     }
   };
@@ -152,13 +174,15 @@ const SearchScreen = () => {
           <View style={styles.resultsContainer}>
             {/* Informacja o wynikach */}
             <Text style={styles.resultsCount}>
-              2 results found for "{searchQuery || category}"
+              2 results found for "{typeof searchQuery === 'string' ? searchQuery : Array.isArray(category) ? category[0] : category || 'search'}"
             </Text>
             
             {/* Sortowanie */}
-            <TouchableOpacity style={styles.sortContainer} onPress={handleSortPress}>
-              <Text style={styles.sortText}>Sort by {selectedSortOption.toLowerCase()}</Text>
-            </TouchableOpacity>
+            <View style={styles.sortRow}>
+              <TouchableOpacity style={styles.sortContainer} onPress={handleSortPress}>
+                <Text style={styles.sortText}>Sort by: <Text style={styles.sortOptionBold}>{selectedSortOption}</Text></Text>
+              </TouchableOpacity>
+            </View>
 
             {/* Filmy */}
             <View style={styles.videosSection}>
@@ -180,7 +204,7 @@ const SearchScreen = () => {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Sort Records By</Text>
+            <Text style={styles.modalTitle}>Sort records by</Text>
             
             {/* Opcje sortowania */}
             <View style={styles.sortOptions}>
@@ -191,7 +215,7 @@ const SearchScreen = () => {
                 <View style={styles.radioButton}>
                   {selectedSortOption === 'Upload Date Latest' && <View style={styles.radioButtonSelected} />}
                 </View>
-                <Text style={styles.sortOptionText}>Upload Date Latest</Text>
+                <Text style={styles.sortOptionText}>Upload date: latest</Text>
               </TouchableOpacity>
 
               <TouchableOpacity 
@@ -201,7 +225,7 @@ const SearchScreen = () => {
                 <View style={styles.radioButton}>
                   {selectedSortOption === 'Upload Date Oldest' && <View style={styles.radioButtonSelected} />}
                 </View>
-                <Text style={styles.sortOptionText}>Upload Date Oldest</Text>
+                <Text style={styles.sortOptionText}>Upload date: oldest</Text>
               </TouchableOpacity>
 
               <TouchableOpacity 
@@ -211,7 +235,7 @@ const SearchScreen = () => {
                 <View style={styles.radioButton}>
                   {selectedSortOption === 'Most Popular' && <View style={styles.radioButtonSelected} />}
                 </View>
-                <Text style={styles.sortOptionText}>Most Popular</Text>
+                <Text style={styles.sortOptionText}>Most popular</Text>
               </TouchableOpacity>
             </View>
 
@@ -332,19 +356,29 @@ const styles = StyleSheet.create({
   resultsCount: {
     fontSize: 16,
     color: '#666',
-    marginBottom: 16,
+    marginBottom: 8,
     paddingHorizontal: 16,
     fontFamily: 'Poppins_400Regular',
   },
-  sortContainer: {
+  sortRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
     paddingHorizontal: 16,
     marginBottom: 20,
   },
+  sortContainer: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+  },
   sortText: {
     fontSize: 14,
-    color: '#007AFF',
+    color: '#2B2D42',
     fontWeight: '500',
     fontFamily: 'Poppins_500Medium',
+  },
+  sortOptionBold: {
+    fontWeight: '700',
+    fontFamily: 'Poppins_700Bold',
   },
   videosSection: {
     marginBottom: 24,
@@ -357,7 +391,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: '#fff',
+    backgroundColor: '#8D99AE',
     borderRadius: 12,
     padding: 24,
     width: '80%',
@@ -365,11 +399,11 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
-    textAlign: 'center',
+    fontWeight: '700',
+    color: '#fff',
+    textAlign: 'left',
     marginBottom: 20,
-    fontFamily: 'Poppins_600SemiBold',
+    fontFamily: 'Poppins_700Bold',
   },
   sortOptions: {
     marginBottom: 24,
@@ -385,7 +419,7 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: '#007AFF',
+    borderColor: '#fff',
     marginRight: 12,
     justifyContent: 'center',
     alignItems: 'center',
@@ -394,24 +428,33 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#2B2D42',
   },
   sortOptionText: {
     fontSize: 16,
-    color: '#333',
+    color: '#fff',
     flex: 1,
     fontFamily: 'Poppins_400Regular',
   },
   confirmButton: {
-    backgroundColor: '#007AFF',
-    paddingVertical: 12,
-    borderRadius: 8,
+    backgroundColor: '#2B2D42',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 12,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   confirmButtonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: '600',
-    fontFamily: 'Poppins_600SemiBold',
+    fontWeight: '700',
+    fontFamily: 'Poppins_700Bold',
   },
 });

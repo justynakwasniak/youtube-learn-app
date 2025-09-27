@@ -37,9 +37,10 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#e0e0e0',
     paddingVertical: 12,
-    paddingHorizontal: 20,
+    paddingHorizontal: 0,
     justifyContent: 'space-around',
     alignItems: 'center',
+    width: '100%',
   },
   footerItem: {
     alignItems: 'center',

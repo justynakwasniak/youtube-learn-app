@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -12,8 +12,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import Footer from '../components/Footer';
+import { apiService } from '../utils/api';
 
 const { width } = Dimensions.get('window');
+
 
 // Mock data dla filmów
 const mockVideos = {
@@ -46,6 +48,45 @@ const mockVideos = {
 const MainAppScreen = () => {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
+  const [videosData, setVideosData] = useState(mockVideos);
+
+  // Ładuj filmy z API przy starcie
+  useEffect(() => {
+    loadVideosFromAPI();
+  }, []);
+
+  const loadVideosFromAPI = async () => {
+    try {
+      const categories = Object.keys(mockVideos);
+      const videosByCategory: any = {};
+      
+      for (const category of categories) {
+        try {
+          const results = await apiService.getVideosByCategory(category) as any;
+          
+          // Konwertuj wyniki YouTube API na format aplikacji
+          const formattedVideos = results.items?.slice(0, 4).map((item: any) => ({
+            id: item.id.videoId,
+            title: item.snippet.title,
+            thumbnail: item.snippet.thumbnails.medium?.url || item.snippet.thumbnails.default?.url,
+            views: 'N/A' // YouTube API nie zwraca views w search
+          })) || [];
+          
+          videosByCategory[category] = formattedVideos.length > 0 ? formattedVideos : mockVideos[category];
+        } catch (error) {
+          console.error(`Error loading ${category}:`, error);
+          // Fallback do mock data
+          videosByCategory[category] = mockVideos[category];
+        }
+      }
+      
+      setVideosData(videosByCategory);
+    } catch (error) {
+      console.error('Error loading videos:', error);
+      // Użyj mock data jako fallback
+      setVideosData(mockVideos);
+    }
+  };
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
@@ -123,7 +164,7 @@ const MainAppScreen = () => {
 
       {/* Główna zawartość z kategoriami */}
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {Object.entries(mockVideos).map(([category, videos]) =>
+        {Object.entries(videosData).map(([category, videos]) =>
           renderCategory(category, videos)
         )}
       </ScrollView>
@@ -140,12 +181,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingHorizontal: 16,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 12,
+    paddingHorizontal: 16,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
@@ -166,6 +207,7 @@ const styles = StyleSheet.create({
   },
   searchIconText: {
     fontSize: 16,
+    color: '#666',
   },
   searchInput: {
     flex: 1,
@@ -182,10 +224,14 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingTop: 8,
+    paddingHorizontal: 16,
   },
   categoryContainer: {
     marginBottom: 32,
     paddingHorizontal: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: '#2B2D42',
+    paddingBottom: 16,
   },
   categoryHeader: {
     flexDirection: 'row',
@@ -207,12 +253,12 @@ const styles = StyleSheet.create({
     paddingRight: 4,
   },
   videoThumbnail: {
-    width: 200,
+    width: 180,
     marginRight: 16,
   },
   thumbnailImage: {
-    width: 200,
-    height: 120,
+    width: 180,
+    height: 112,
     borderRadius: 8,
     backgroundColor: '#f0f0f0',
   },
@@ -237,7 +283,7 @@ const styles = StyleSheet.create({
   showMoreText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#007AFF',
+    color: '#2B2D42',
     textDecorationLine: 'underline',
     fontFamily: 'Poppins_500Medium',
   },

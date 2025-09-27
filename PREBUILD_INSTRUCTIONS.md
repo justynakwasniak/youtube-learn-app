@@ -42,3 +42,4 @@ npx expo start
 npm list react-native-video
 ```
 
+
