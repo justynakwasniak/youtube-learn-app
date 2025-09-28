@@ -11,6 +11,13 @@ export const API_CONFIG = {
   }
 };
 
+// Debug: sprawdź czy API key jest poprawnie odczytywany (można usunąć w produkcji)
+// console.log('API Config:', {
+//   BASE_URL: API_CONFIG.BASE_URL,
+//   API_KEY: API_CONFIG.API_KEY ? `${API_CONFIG.API_KEY.substring(0, 10)}...` : 'BRAK KLUCZA',
+//   ENDPOINTS: API_CONFIG.ENDPOINTS
+// });
+
 // API Service Class
 export class ApiService {
   private baseURL: string;
@@ -28,6 +35,12 @@ export class ApiService {
     
     const url = `${this.baseURL}${endpoint}?${urlParams}`;
     
+    // Debug: można odkomentować w przypadku problemów z API
+    // console.log('API Request:', {
+    //   url: url.replace(API_CONFIG.API_KEY, 'API_KEY_HIDDEN'),
+    //   params: params
+    // });
+    
     try {
       const response = await fetch(url, {
         headers: {
@@ -35,11 +48,17 @@ export class ApiService {
         },
       });
 
+      // console.log('API Response status:', response.status);
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error('API Error Response:', errorText);
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
       }
 
-      return await response.json();
+      const data = await response.json();
+      // console.log('API Success:', { itemCount: data.items?.length || 0 });
+      return data;
     } catch (error) {
       console.error('API Error:', error);
       throw error;

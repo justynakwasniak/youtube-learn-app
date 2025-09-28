@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   StyleSheet,
   Text,
@@ -13,39 +13,33 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import Footer from '../components/Footer';
 import { apiService } from '../utils/api';
+import { 
+  Video, 
+  VideosByCategory, 
+  CATEGORIES, 
+  MAX_VIDEOS_PER_CATEGORY, 
+  mockVideos 
+} from '../utils/mockData';
 
 const { width } = Dimensions.get('window');
 
+// Types
+interface MainAppScreenProps {}
 
-// Mock data dla filmów
-const mockVideos = {
-  'React Native': [
-    { id: 1, title: 'React Native Tutorial', thumbnail: 'https://via.placeholder.com/200x120/FF6B6B/FFFFFF?text=RN+1', views: '1.2M' },
-    { id: 2, title: 'Navigation in React Native', thumbnail: 'https://via.placeholder.com/200x120/4ECDC4/FFFFFF?text=RN+2', views: '856K' },
-    { id: 3, title: 'State Management', thumbnail: 'https://via.placeholder.com/200x120/45B7D1/FFFFFF?text=RN+3', views: '2.1M' },
-    { id: 4, title: 'React Native Performance', thumbnail: 'https://via.placeholder.com/200x120/96CEB4/FFFFFF?text=RN+4', views: '743K' },
-  ],
-  'React': [
-    { id: 5, title: 'React Hooks Explained', thumbnail: 'https://via.placeholder.com/200x120/FFEAA7/FFFFFF?text=React+1', views: '3.2M' },
-    { id: 6, title: 'React Context API', thumbnail: 'https://via.placeholder.com/200x120/DDA0DD/FFFFFF?text=React+2', views: '1.8M' },
-    { id: 7, title: 'React Router Tutorial', thumbnail: 'https://via.placeholder.com/200x120/98D8C8/FFFFFF?text=React+3', views: '2.5M' },
-    { id: 8, title: 'React Best Practices', thumbnail: 'https://via.placeholder.com/200x120/F7DC6F/FFFFFF?text=React+4', views: '1.1M' },
-  ],
-  'TypeScript': [
-    { id: 9, title: 'TypeScript Basics', thumbnail: 'https://via.placeholder.com/200x120/BB8FCE/FFFFFF?text=TS+1', views: '2.8M' },
-    { id: 10, title: 'Advanced TypeScript', thumbnail: 'https://via.placeholder.com/200x120/85C1E9/FFFFFF?text=TS+2', views: '1.5M' },
-    { id: 11, title: 'TypeScript with React', thumbnail: 'https://via.placeholder.com/200x120/F8C471/FFFFFF?text=TS+3', views: '2.2M' },
-    { id: 12, title: 'TypeScript Generics', thumbnail: 'https://via.placeholder.com/200x120/82E0AA/FFFFFF?text=TS+4', views: '967K' },
-  ],
-  'JavaScript': [
-    { id: 13, title: 'ES6+ Features', thumbnail: 'https://via.placeholder.com/200x120/F1948A/FFFFFF?text=JS+1', views: '4.1M' },
-    { id: 14, title: 'Async/Await Tutorial', thumbnail: 'https://via.placeholder.com/200x120/85C1E9/FFFFFF?text=JS+2', views: '3.7M' },
-    { id: 15, title: 'JavaScript Closures', thumbnail: 'https://via.placeholder.com/200x120/F7DC6F/FFFFFF?text=JS+3', views: '2.9M' },
-    { id: 16, title: 'Modern JavaScript', thumbnail: 'https://via.placeholder.com/200x120/BB8FCE/FFFFFF?text=JS+4', views: '1.6M' },
-  ],
-};
+interface YouTubeSearchResult {
+  items?: Array<{
+    id: { videoId: string };
+    snippet: {
+      title: string;
+      thumbnails: {
+        medium?: { url: string };
+        default?: { url: string };
+      };
+    };
+  }>;
+}
 
-const MainAppScreen = () => {
+const MainAppScreen: React.FC<MainAppScreenProps> = () => {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [videosData, setVideosData] = useState(mockVideos);
@@ -55,75 +49,117 @@ const MainAppScreen = () => {
     loadVideosFromAPI();
   }, []);
 
-  const loadVideosFromAPI = async () => {
+  const formatYouTubeResults = useCallback((results: YouTubeSearchResult): Video[] => {
+    return results.items?.slice(0, MAX_VIDEOS_PER_CATEGORY).map((item) => ({
+      id: item.id.videoId,
+      title: item.snippet.title,
+      thumbnail: item.snippet.thumbnails.medium?.url || item.snippet.thumbnails.default?.url || '',
+      views: 'N/A' // YouTube API nie zwraca views w search
+    })) || [];
+  }, []);
+
+  const loadVideosFromAPI = useCallback(async (): Promise<void> => {
     try {
-      const categories = Object.keys(mockVideos);
-      const videosByCategory: any = {};
+      const videosByCategory: VideosByCategory = {};
       
-      for (const category of categories) {
+      // Użyj Promise.allSettled dla równoległego ładowania
+      const categoryPromises = CATEGORIES.map(async (category) => {
         try {
-          const results = await apiService.getVideosByCategory(category) as any;
+          const results = await apiService.getVideosByCategory(category) as YouTubeSearchResult;
+          const formattedVideos = formatYouTubeResults(results);
           
-          // Konwertuj wyniki YouTube API na format aplikacji
-          const formattedVideos = results.items?.slice(0, 4).map((item: any) => ({
-            id: item.id.videoId,
-            title: item.snippet.title,
-            thumbnail: item.snippet.thumbnails.medium?.url || item.snippet.thumbnails.default?.url,
-            views: 'N/A' // YouTube API nie zwraca views w search
-          })) || [];
-          
-          videosByCategory[category] = formattedVideos.length > 0 ? formattedVideos : mockVideos[category];
+          return {
+            category,
+            videos: formattedVideos.length > 0 ? formattedVideos : mockVideos[category]
+          };
         } catch (error) {
           console.error(`Error loading ${category}:`, error);
-          // Fallback do mock data
-          videosByCategory[category] = mockVideos[category];
+          return {
+            category,
+            videos: mockVideos[category]
+          };
         }
-      }
+      });
+
+      const results = await Promise.allSettled(categoryPromises);
+      
+      results.forEach((result) => {
+        if (result.status === 'fulfilled') {
+          videosByCategory[result.value.category] = result.value.videos;
+        }
+      });
       
       setVideosData(videosByCategory);
     } catch (error) {
       console.error('Error loading videos:', error);
-      // Użyj mock data jako fallback
       setVideosData(mockVideos);
     }
-  };
+  }, [formatYouTubeResults]);
 
-  const handleSearch = () => {
-    if (searchQuery.trim()) {
+  const handleSearch = useCallback((): void => {
+    const trimmedQuery = searchQuery.trim();
+    if (trimmedQuery) {
       router.push({
         pathname: '/search',
-        params: { query: searchQuery.trim() }
+        params: { query: trimmedQuery }
       });
     }
-  };
-
-  const handleShowMore = (category: string) => {
+  }, [searchQuery, router]);
+  
+  const handleShowMore = useCallback((category: string): void => {
     router.push({
       pathname: '/search',
-      params: { category: category }
+      params: { category }
     });
-  };
+  }, [router]);
+  
+  const handleVideoPress = useCallback((video: Video): void => {
+    console.log('Video pressed:', video.title);
+    router.push({
+      pathname: '/video-details',
+      params: {
+        videoId: String(video.id),
+        title: video.title,
+        views: video.views,
+        duration: '15:30' // Mock duration
+      }
+    });
+  }, [router]);
 
-  const handleSettings = () => {
+  const handleSettings = useCallback((): void => {
     // Tutaj będzie nawigacja do ustawień
     console.log('Settings clicked');
-  };
+  }, []);
 
-  const renderVideoThumbnail = (video: any) => (
-    <TouchableOpacity key={video.id} style={styles.videoThumbnail}>
-      <Image source={{ uri: video.thumbnail }} style={styles.thumbnailImage} />
+  const renderVideoThumbnail = useCallback((video: Video) => (
+    <TouchableOpacity 
+      key={video.id} 
+      style={styles.videoThumbnail}
+      onPress={() => handleVideoPress(video)}
+      accessibilityRole="button"
+      accessibilityLabel={`Watch video: ${video.title}`}
+      accessibilityHint="Opens video details"
+    >
+      <Image 
+        source={{ uri: video.thumbnail }} 
+        style={styles.thumbnailImage}
+        accessibilityLabel={`Thumbnail for ${video.title}`}
+      />
       <Text style={styles.videoTitle} numberOfLines={2}>{video.title}</Text>
       <Text style={styles.videoViews}>{video.views} views</Text>
     </TouchableOpacity>
-  );
+  ), [handleVideoPress]);
 
-  const renderCategory = (categoryName: string, videos: any[]) => (
+  const renderCategory = useCallback((categoryName: string, videos: Video[]) => (
     <View key={categoryName} style={styles.categoryContainer}>
       <View style={styles.categoryHeader}>
         <Text style={styles.categoryTitle}>{categoryName}</Text>
         <TouchableOpacity
           style={styles.showMoreLink}
           onPress={() => handleShowMore(categoryName)}
+          accessibilityRole="button"
+          accessibilityLabel={`Show more ${categoryName} videos`}
+          accessibilityHint="Opens search results for this category"
         >
           <Text style={styles.showMoreText}>Show More</Text>
         </TouchableOpacity>
@@ -133,10 +169,18 @@ const MainAppScreen = () => {
         showsHorizontalScrollIndicator={false}
         style={styles.horizontalScroll}
         contentContainerStyle={styles.scrollContent}
+        accessibilityLabel={`${categoryName} videos`}
       >
         {videos.map(renderVideoThumbnail)}
       </ScrollView>
     </View>
+  ), [handleShowMore, renderVideoThumbnail]);
+
+  // Memoize categories to prevent unnecessary re-renders
+  const categoriesList = useMemo(() => 
+    Object.entries(videosData).map(([category, videos]) => 
+      renderCategory(category, videos)
+    ), [videosData, renderCategory]
   );
 
   return (
@@ -144,7 +188,11 @@ const MainAppScreen = () => {
       {/* Header z search barem */}
       <View style={styles.header}>
         <View style={styles.searchContainer}>
-          <TouchableOpacity style={styles.searchIcon}>
+          <TouchableOpacity 
+            style={styles.searchIcon}
+            accessibilityRole="button"
+            accessibilityLabel="Search icon"
+          >
             <Text style={styles.searchIconText}>🔍</Text>
           </TouchableOpacity>
           <TextInput
@@ -155,18 +203,28 @@ const MainAppScreen = () => {
             onChangeText={setSearchQuery}
             onSubmitEditing={handleSearch}
             returnKeyType="search"
+            accessibilityLabel="Search videos"
+            accessibilityHint="Enter search terms to find videos"
           />
         </View>
-        <TouchableOpacity style={styles.settingsButton} onPress={handleSettings}>
+        <TouchableOpacity 
+          style={styles.settingsButton} 
+          onPress={handleSettings}
+          accessibilityRole="button"
+          accessibilityLabel="Settings"
+          accessibilityHint="Opens app settings"
+        >
           <Text style={styles.settingsIcon}>⚙️</Text>
         </TouchableOpacity>
       </View>
 
       {/* Główna zawartość z kategoriami */}
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {Object.entries(videosData).map(([category, videos]) =>
-          renderCategory(category, videos)
-        )}
+      <ScrollView 
+        style={styles.content} 
+        showsVerticalScrollIndicator={false}
+        accessibilityLabel="Video categories"
+      >
+        {categoriesList}
       </ScrollView>
 
       {/* Stopka */}
@@ -177,73 +235,109 @@ const MainAppScreen = () => {
 
 export default MainAppScreen;
 
+// Design tokens
+const COLORS = {
+  background: '#fff',
+  primary: '#007AFF',
+  secondary: '#f5f5f5',
+  border: '#e0e0e0',
+  text: '#333',
+  textSecondary: '#666',
+  textMuted: '#999',
+  shadow: '#000',
+} as const;
+
+const SIZES = {
+  borderRadius: 16,
+  borderWidth: 2,
+  padding: {
+    small: 8,
+    medium: 12,
+    large: 16,
+  },
+  margin: {
+    small: 8,
+    medium: 12,
+    large: 16,
+  },
+  shadow: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+} as const;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.background,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    backgroundColor: '#fff',
+    paddingVertical: SIZES.padding.medium,
+    paddingHorizontal: SIZES.padding.large,
+    backgroundColor: COLORS.background,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-    marginBottom: 16,
+    borderBottomColor: COLORS.border,
+    marginBottom: SIZES.margin.large,
     marginTop: 20,
   },
   searchContainer: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-    borderRadius: 25,
+    backgroundColor: COLORS.secondary,
+    borderRadius: SIZES.borderRadius,
     paddingHorizontal: 15,
-    marginRight: 12,
+    marginRight: SIZES.margin.medium,
+    borderWidth: SIZES.borderWidth,
+    borderColor: '#2B2D42',
   },
   searchIcon: {
     marginRight: 8,
   },
   searchIconText: {
     fontSize: 16,
-    color: '#666',
+    color: COLORS.textSecondary,
   },
   searchInput: {
     flex: 1,
-    paddingVertical: 12,
+    paddingVertical: SIZES.padding.medium,
     fontSize: 16,
-    color: '#333',
+    color: COLORS.text,
   },
   settingsButton: {
-    padding: 8,
+    padding: SIZES.padding.small,
   },
   settingsIcon: {
     fontSize: 20,
   },
   content: {
     flex: 1,
-    paddingTop: 8,
-    paddingHorizontal: 16,
+    paddingTop: SIZES.padding.small,
+    paddingHorizontal: SIZES.padding.large,
   },
   categoryContainer: {
     marginBottom: 32,
     paddingHorizontal: 4,
     borderBottomWidth: 1,
     borderBottomColor: '#2B2D42',
-    paddingBottom: 16,
+    paddingBottom: SIZES.padding.large,
   },
   categoryHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: SIZES.margin.medium,
     paddingHorizontal: 4,
   },
   categoryTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#333',
+    color: COLORS.text,
     fontFamily: 'Poppins_700Bold',
   },
   horizontalScroll: {
@@ -254,31 +348,31 @@ const styles = StyleSheet.create({
   },
   videoThumbnail: {
     width: 180,
-    marginRight: 16,
+    marginRight: SIZES.margin.large,
   },
   thumbnailImage: {
     width: 180,
     height: 112,
-    borderRadius: 8,
-    backgroundColor: '#f0f0f0',
+    borderRadius: SIZES.borderRadius,
+    backgroundColor: COLORS.secondary,
   },
   videoTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#333',
-    marginTop: 8,
+    color: COLORS.text,
+    marginTop: SIZES.margin.small,
     lineHeight: 18,
     fontFamily: 'Poppins_600SemiBold',
   },
   videoViews: {
     fontSize: 12,
-    color: '#666',
+    color: COLORS.textSecondary,
     marginTop: 4,
     fontFamily: 'Poppins_400Regular',
   },
   showMoreLink: {
     paddingVertical: 4,
-    paddingHorizontal: 8,
+    paddingHorizontal: SIZES.padding.small,
   },
   showMoreText: {
     fontSize: 14,

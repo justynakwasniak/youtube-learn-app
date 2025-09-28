@@ -1,23 +1,42 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, Linking } from "react-native";
+import { StyleSheet, Text, View, Image, TouchableOpacity, Linking, Alert } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
-const MainScreen = () => {
+// Constants
+const TERMS_URL = 'https://www.google.com';
+const PRIVACY_URL = 'https://www.google.com';
+
+// Types
+interface LoginScreenProps {}
+
+const LoginScreen: React.FC<LoginScreenProps> = () => {
   const router = useRouter();
   
-  const handleGuestLogin = () => {
+  const handleGuestLogin = (): void => {
     router.push('/main-app');
   };
 
-  const handleTermsPress = () => {
-    // Otwiera Google po kliknięciu w Terms and Conditions
-    Linking.openURL('https://www.google.com');
+  const handleLinkPress = async (url: string, linkName: string): Promise<void> => {
+    try {
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        Alert.alert('Error', `Cannot open ${linkName} link`);
+      }
+    } catch (error) {
+      console.error(`Error opening ${linkName}:`, error);
+      Alert.alert('Error', `Failed to open ${linkName}`);
+    }
   };
 
-  const handlePrivacyPress = () => {
-    // Otwiera Google po kliknięciu w Privacy Policy
-    Linking.openURL('https://www.google.com');
+  const handleTermsPress = (): void => {
+    handleLinkPress(TERMS_URL, 'Terms and Conditions');
+  };
+
+  const handlePrivacyPress = (): void => {
+    handleLinkPress(PRIVACY_URL, 'Privacy Policy');
   };
 
   return (
@@ -51,7 +70,13 @@ const MainScreen = () => {
 
       {/* Przycisk logowania jako gość */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.guestButton} onPress={handleGuestLogin}>
+        <TouchableOpacity 
+          style={styles.guestButton} 
+          onPress={handleGuestLogin}
+          accessibilityRole="button"
+          accessibilityLabel="Log in as guest"
+          accessibilityHint="Continue to the app without creating an account"
+        >
           <Text style={styles.buttonText}>Log in as guest</Text>
         </TouchableOpacity>
       </View>
@@ -60,11 +85,23 @@ const MainScreen = () => {
       <View style={styles.termsContainer}>
         <Text style={styles.termsText}>
           By continuing, you agree with{'\n'}
-          <Text style={styles.linkText} onPress={handleTermsPress}>
+          <Text 
+            style={styles.linkText} 
+            onPress={handleTermsPress}
+            accessibilityRole="link"
+            accessibilityLabel="Terms and conditions"
+            accessibilityHint="Opens terms and conditions in browser"
+          >
             terms and conditions
           </Text>
           {' '}and{' '}
-          <Text style={styles.linkText} onPress={handlePrivacyPress}>
+          <Text 
+            style={styles.linkText} 
+            onPress={handlePrivacyPress}
+            accessibilityRole="link"
+            accessibilityLabel="Privacy policy"
+            accessibilityHint="Opens privacy policy in browser"
+          >
             privacy policy
           </Text>
         </Text>
@@ -73,12 +110,34 @@ const MainScreen = () => {
   );
 };
 
-export default MainScreen;
+export default LoginScreen;
+
+// Design tokens
+const COLORS = {
+  background: '#8D99AE',
+  primary: '#2B2D42',
+  white: '#fff',
+  text: '#fff',
+  link: '#2B2D42',
+} as const;
+
+const SIZES = {
+  logo: { width: 292, height: 116 },
+  icon: { width: 128, height: 128 },
+  borderRadius: 12,
+  shadow: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+} as const;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#8D99AE',
+    backgroundColor: COLORS.background,
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
@@ -90,8 +149,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   logo: {
-    width: 292,
-    height: 116,
+    width: SIZES.logo.width,
+    height: SIZES.logo.height,
   },
   iconContainer: {
     flex: 1,
@@ -99,8 +158,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   centerIcon: {
-    width: 128,
-    height: 128,
+    width: SIZES.icon.width,
+    height: SIZES.icon.height,
   },
   welcomeContainer: {
     alignItems: 'center',
@@ -110,7 +169,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     textAlign: 'left',
-    color: '#fff',
+    color: COLORS.text,
     lineHeight: 24,
     fontFamily: 'Poppins_600SemiBold',
   },
@@ -119,22 +178,15 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   guestButton: {
-    backgroundColor: '#2B2D42',
+    backgroundColor: COLORS.primary,
     paddingVertical: 15,
     paddingHorizontal: 30,
-    borderRadius: 12,
+    borderRadius: SIZES.borderRadius,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    ...SIZES.shadow,
   },
   buttonText: {
-    color: '#fff',
+    color: COLORS.white,
     fontSize: 16,
     fontWeight: '600',
     fontFamily: 'Poppins_600SemiBold',
@@ -145,13 +197,13 @@ const styles = StyleSheet.create({
   },
   termsText: {
     fontSize: 12,
-    color: '#fff',
+    color: COLORS.text,
     textAlign: 'center',
     lineHeight: 16,
     fontFamily: 'Poppins_400Regular',
   },
   linkText: {
-    color: '#2B2D42',
+    color: COLORS.link,
     textDecorationLine: 'underline',
     fontWeight: '500',
     fontFamily: 'Poppins_500Medium',
