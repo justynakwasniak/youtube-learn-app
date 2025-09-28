@@ -1,27 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 import { useRouter } from 'expo-router';
+import { HomeIcon, SearchIcon } from '../utils/SvgIcon';
 
 const Footer = () => {
   const router = useRouter();
+  const [pressedButton, setPressedButton] = useState<string | null>(null);
 
   const handleHomePress = () => {
+    setPressedButton('home');
     router.push('/main-app');
   };
 
   const handleSearchPress = () => {
+    setPressedButton('search');
     router.push('/search');
   };
 
   return (
     <View style={styles.footer}>
       <TouchableOpacity style={styles.footerItem} onPress={handleHomePress}>
-        <Text style={styles.footerIcon}>🏠</Text>
+        <HomeIcon 
+          width={32} 
+          height={32} 
+          color={pressedButton === 'home' ? '#ffffff' : '#2B2D42'} 
+        />
         <Text style={styles.footerText}>Home</Text>
       </TouchableOpacity>
       
       <TouchableOpacity style={styles.footerItem} onPress={handleSearchPress}>
-        <Text style={styles.footerIcon}>🔍</Text>
+        <SearchIcon 
+          width={32} 
+          height={32} 
+          color={pressedButton === 'search' ? '#ffffff' : '#2B2D42'} 
+        />
         <Text style={styles.footerText}>Search</Text>
       </TouchableOpacity>
     </View>
@@ -46,15 +58,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
   },
-  footerIcon: {
-    fontSize: 24,
-    marginBottom: 4,
-  },
   footerText: {
-    fontSize: 12,
-    color: '#666',
+    fontSize: 14,
+    color: '#2B2D42',
     fontWeight: '500',
     fontFamily: 'Poppins_500Medium',
+    marginTop: 4,
   },
 });
 

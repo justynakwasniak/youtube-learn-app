@@ -12,7 +12,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import Video, { VideoRef } from 'react-native-video';
 import Footer from '../components/Footer';
-import { apiService } from '../utils/api';
+import { 
+  apiService,
+  BackArrowIcon,
+  ViewsIcon,
+  LikesIcon,
+  FullscreenIcon,
+  PersonIcon
+} from '../utils';
 
 const { width } = Dimensions.get('window');
 
@@ -150,7 +157,7 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
           accessibilityLabel="Go back"
           accessibilityHint="Returns to previous screen"
         >
-          <Text style={styles.backIcon}>←</Text>
+          <BackArrowIcon width={20} height={20} color="#007AFF" />
         </TouchableOpacity>
       </View>
 
@@ -183,7 +190,7 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
             accessibilityLabel="Fullscreen"
             accessibilityHint="Opens video in fullscreen mode"
           >
-            <Text style={styles.fullscreenIcon}>⛶</Text>
+            <FullscreenIcon width={16} height={16} color="#fff" />
           </TouchableOpacity>
         </View>
 
@@ -202,9 +209,12 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
             accessibilityLabel={`Channel avatar for ${displayChannelTitle}`}
           />
           <View style={styles.channelDetails}>
-            <Text style={styles.channelName}>
-              {displayChannelTitle}
-            </Text>
+            <View style={styles.channelNameRow}>
+              <PersonIcon width={35} height={25} color="#2B2D42" style={styles.personIcon} />
+              <Text style={styles.channelName}>
+                {displayChannelTitle}
+              </Text>
+            </View>
           </View>
         </View>
 
@@ -235,7 +245,7 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
               accessibilityRole="button"
               accessibilityLabel={`${formattedViewCount} views`}
             >
-              <Text style={styles.statIcon}>👁️</Text>
+              <ViewsIcon width={18} height={18} color="#fff" style={styles.statIcon} />
               <Text style={styles.statText}>
                 {formattedViewCount} views
               </Text>
@@ -248,7 +258,12 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
               accessibilityLabel={`${formatNumber(likes)} likes`}
               accessibilityHint={isLiked ? "Unlike this video" : "Like this video"}
             >
-              <Text style={styles.statIcon}>{isLiked ? '❤️' : '🤍'}</Text>
+              <LikesIcon 
+                width={18} 
+                height={18} 
+                color={isLiked ? "#FF6B6B" : "#fff"} 
+                style={styles.statIcon}
+              />
               <Text style={[styles.statText, isLiked && styles.likedText]}>
                 {formatNumber(likes)} likes
               </Text>
@@ -356,7 +371,8 @@ const styles = StyleSheet.create({
   channelInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: SIZES.padding.large,
+    paddingLeft: 8,
+    paddingRight: SIZES.padding.large,
     paddingVertical: SIZES.padding.medium,
   },
   channelAvatar: { 
@@ -366,6 +382,15 @@ const styles = StyleSheet.create({
     marginRight: SIZES.margin.medium 
   },
   channelDetails: { flex: 1 },
+  channelNameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    marginLeft: -16,
+  },
+  personIcon: {
+    marginRight: 8,
+  },
   channelName: { 
     fontSize: 16, 
     fontWeight: 'bold', 
@@ -405,7 +430,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   likedButton: { backgroundColor: '#FFE5E5' },
-  statIcon: { fontSize: 16, marginRight: 6 },
+  statIcon: { fontSize: 16, marginRight: 6, marginLeft: -8 },
   statText: { fontSize: 14, fontWeight: '500', color: '#fff' },
   likedText: { color: '#FF6B6B' },
 });

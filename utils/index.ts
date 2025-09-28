@@ -18,5 +18,17 @@ export {
 // Components
 export { default as SortModal } from './SortModal';
 
+// Icons
+export { 
+  SearchIcon, 
+  SettingsIcon, 
+  HomeIcon, 
+  BackArrowIcon, 
+  ViewsIcon, 
+  LikesIcon, 
+  FullscreenIcon,
+  PersonIcon
+} from './SvgIcon';
+
 // Hooks
 export { useSortModal } from './useSortModal';

@@ -19,7 +19,9 @@ import {
   ExtendedVideo, 
   Channel,
   SortModal,
-  useSortModal 
+  useSortModal,
+  SearchIcon,
+  BackArrowIcon
 } from '../utils';
 
 // Types
@@ -183,16 +185,9 @@ const SearchScreen: React.FC<SearchScreenProps> = () => {
     <SafeAreaView style={styles.container}>
       {/* Header z search barem */}
       <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton} 
-          onPress={handleBack}
-          accessibilityRole="button"
-          accessibilityLabel="Go back"
-          accessibilityHint="Returns to previous screen"
-        >
-          <Text style={styles.backIcon}>←</Text>
-        </TouchableOpacity>
+        
         <View style={styles.searchContainer}>
+          <SearchIcon width={20} height={20} color="#2B2D42" style={styles.searchIconLeft} />
           <TextInput
             style={styles.searchInput}
             placeholder="Search Videos"
@@ -205,15 +200,6 @@ const SearchScreen: React.FC<SearchScreenProps> = () => {
             accessibilityLabel="Search videos"
             accessibilityHint="Enter search terms to find videos"
           />
-          <TouchableOpacity 
-            style={styles.searchButton} 
-            onPress={handleSearch}
-            accessibilityRole="button"
-            accessibilityLabel="Search"
-            accessibilityHint="Performs video search"
-          >
-            <Text style={styles.searchIcon}>🔍</Text>
-          </TouchableOpacity>
         </View>
       </View>
 
@@ -345,6 +331,9 @@ const styles = StyleSheet.create({
   },
   searchButton: {
     padding: SIZES.padding.small,
+  },
+  searchIconLeft: {
+    marginRight: 8,
   },
   searchIcon: {
     fontSize: 16,

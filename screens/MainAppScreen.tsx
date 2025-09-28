@@ -12,14 +12,16 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import Footer from '../components/Footer';
-import { apiService } from '../utils/api';
 import { 
+  apiService,
   Video, 
   VideosByCategory, 
   CATEGORIES, 
   MAX_VIDEOS_PER_CATEGORY, 
-  mockVideos 
-} from '../utils/mockData';
+  mockVideos,
+  SearchIcon,
+  SettingsIcon
+} from '../utils';
 
 const { width } = Dimensions.get('window');
 
@@ -188,12 +190,12 @@ const MainAppScreen: React.FC<MainAppScreenProps> = () => {
       {/* Header z search barem */}
       <View style={styles.header}>
         <View style={styles.searchContainer}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.searchIcon}
             accessibilityRole="button"
             accessibilityLabel="Search icon"
           >
-            <Text style={styles.searchIconText}>🔍</Text>
+            <SearchIcon width={20} height={20} color="#666" />
           </TouchableOpacity>
           <TextInput
             style={styles.searchInput}
@@ -207,14 +209,14 @@ const MainAppScreen: React.FC<MainAppScreenProps> = () => {
             accessibilityHint="Enter search terms to find videos"
           />
         </View>
-        <TouchableOpacity 
-          style={styles.settingsButton} 
+        <TouchableOpacity
+          style={styles.settingsButton}
           onPress={handleSettings}
           accessibilityRole="button"
           accessibilityLabel="Settings"
           accessibilityHint="Opens app settings"
         >
-          <Text style={styles.settingsIcon}>⚙️</Text>
+          <SettingsIcon width={24} height={24} color="#333" />
         </TouchableOpacity>
       </View>
 
