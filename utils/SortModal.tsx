@@ -21,20 +21,18 @@ interface SortModalProps {
   onConfirm: () => void;
 }
 
-// Constants
 const SORT_OPTIONS: SortOption[] = [
   { id: 'Upload Date Latest', label: 'Upload date: latest' },
   { id: 'Upload Date Oldest', label: 'Upload date: oldest' },
   { id: 'Most Popular', label: 'Most popular' },
 ];
 
-// Design tokens
 const COLORS = {
   background: '#8D99AE',
   white: '#fff',
   overlay: 'rgba(0, 0, 0, 0.7)',
   primary: '#007AFF',
-  darkBlue: '#2B2D42', // Ciemny granatowy dla radio button
+  darkBlue: '#2B2D42',
 } as const;
 
 const SIZES = {
@@ -70,7 +68,6 @@ const SortModal: React.FC<SortModalProps> = ({
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Sort records by:</Text>
           
-          {/* Opcje sortowania */}
           <View style={styles.sortOptions}>
             {SORT_OPTIONS.map((option) => (
               <TouchableOpacity
@@ -91,7 +88,6 @@ const SortModal: React.FC<SortModalProps> = ({
             ))}
           </View>
 
-          {/* Przycisk Confirm */}
           <TouchableOpacity 
             style={styles.confirmButton} 
             onPress={onConfirm}
@@ -156,7 +152,7 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: COLORS.darkBlue, // Ciemny granatowy zamiast białego
+    backgroundColor: COLORS.darkBlue,
   },
   sortOptionText: {
     fontSize: 16,
@@ -164,7 +160,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins_400Regular',
   },
   confirmButton: {
-    backgroundColor: COLORS.darkBlue, // #2B2D42
+    backgroundColor: COLORS.darkBlue,
     width: 256,
     height: 40,
     borderRadius: SIZES.confirmButtonRadius,

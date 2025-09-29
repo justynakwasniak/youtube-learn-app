@@ -10,7 +10,6 @@ interface UseSortModalReturn {
   handleCloseModal: () => void;
 }
 
-// Constants
 const DEFAULT_SORT_OPTION = 'Most Popular';
 
 export const useSortModal = (): UseSortModalReturn => {
@@ -27,7 +26,6 @@ export const useSortModal = (): UseSortModalReturn => {
 
   const handleConfirmSort = useCallback((): void => {
     setShowSortModal(false);
-    // Tutaj można dodać logikę sortowania wyników
     console.log('Sorting by:', selectedSortOption);
   }, [selectedSortOption]);
 

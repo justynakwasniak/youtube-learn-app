@@ -23,6 +23,7 @@ import {
   SearchIcon,
   BackArrowIcon
 } from '../utils';
+import { COLORS, TYPOGRAPHY, SPACING, commonStyles } from '../styles';
 
 // Types
 interface SearchScreenProps {}
@@ -64,7 +65,7 @@ const SearchScreen: React.FC<SearchScreenProps> = () => {
     const searchTerm = Array.isArray(query) ? query[0] : query || (Array.isArray(category) ? category[0] : category);
     
     if (searchTerm) {
-      performSearch(searchTerm); // 🔥 obsługuje zarówno kategorię, jak i frazę
+      performSearch(searchTerm); 
     }
   }, [query, category, selectedSortOption]);
   
@@ -73,7 +74,7 @@ const SearchScreen: React.FC<SearchScreenProps> = () => {
       id: item.id.videoId,
       title: item.snippet.title,
       thumbnail: item.snippet.thumbnails.medium?.url || item.snippet.thumbnails.default?.url || '',
-      views: new Date(item.snippet.publishedAt).toLocaleDateString('pl-PL', { 
+      publishedAt: new Date(item.snippet.publishedAt).toLocaleDateString('pl-PL', { 
         year: 'numeric', 
         month: 'short', 
         day: 'numeric' 
@@ -138,7 +139,7 @@ const SearchScreen: React.FC<SearchScreenProps> = () => {
       params: {
         videoId: String(video.id),
         title: video.title,
-        views: video.views,
+        publishedAt: video.publishedAt,
         duration: video.duration || '15:30'
       }
     });
@@ -160,9 +161,9 @@ const SearchScreen: React.FC<SearchScreenProps> = () => {
         accessibilityLabel={`Thumbnail for ${video.title}`}
       />
       <View style={styles.resultInfo}>
-        <Text style={styles.resultTitle} numberOfLines={2}>{video.title}</Text>
-        <Text style={styles.resultViews}>{video.views} views</Text>
-        <Text style={styles.resultDuration}>{video.duration}</Text>
+        <Text style={styles.resultChannel} numberOfLines={1}>{video.channelTitle}</Text>
+        <Text style={styles.resultDescription} numberOfLines={2}>{video.description}</Text>
+        <Text style={styles.resultViews}>{video.publishedAt}</Text>
       </View>
     </TouchableOpacity>
   ), [handleVideoPress]);
@@ -183,7 +184,6 @@ const SearchScreen: React.FC<SearchScreenProps> = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header z search barem */}
       <View style={styles.header}>
         
         <View style={styles.searchContainer}>
@@ -203,7 +203,6 @@ const SearchScreen: React.FC<SearchScreenProps> = () => {
         </View>
       </View>
 
-      {/* Zawartość wyszukiwania */}
       <ScrollView style={styles.content}>
         {isLoading ? (
           <View style={styles.loadingContainer}>
@@ -212,12 +211,12 @@ const SearchScreen: React.FC<SearchScreenProps> = () => {
           </View>
         ) : (
           <View style={styles.resultsContainer}>
-            {/* Informacja o wynikach */}
+          
             <Text style={styles.resultsCount}>
-              {searchResults.length} result{searchResults.length !== 1 ? 's' : ''} found for "{displayQuery}"
+              {searchResults.length} result{searchResults.length !== 1 ? 's' : ''} found for <Text style={styles.queryText}>"{displayQuery}"</Text>
             </Text>
             
-            {/* Sortowanie */}
+            
             <View style={styles.sortRow}>
               <TouchableOpacity 
                 style={styles.sortContainer} 
@@ -230,7 +229,7 @@ const SearchScreen: React.FC<SearchScreenProps> = () => {
               </TouchableOpacity>
             </View>
 
-            {/* Filmy */}
+        
             <View style={styles.videosSection}>
               {memoizedSearchResults}
             </View>
@@ -238,10 +237,10 @@ const SearchScreen: React.FC<SearchScreenProps> = () => {
         )}
       </ScrollView>
 
-      {/* Stopka */}
+     
       <Footer />
 
-      {/* Modal sortowania */}
+      
       <SortModal
         visible={showSortModal}
         selectedOption={selectedSortOption}
@@ -255,88 +254,32 @@ const SearchScreen: React.FC<SearchScreenProps> = () => {
 
 export default SearchScreen;
 
-// Design tokens
-const COLORS = {
-  background: '#fff',
-  primary: '#007AFF',
-  secondary: '#8D99AE',
-  border: '#e0e0e0',
-  text: '#333',
-  textSecondary: '#666',
-  textMuted: '#999',
-  white: '#fff',
-} as const;
-
-const SIZES = {
-  borderRadius: 16,
-  padding: {
-    small: 8,
-    medium: 12,
-    large: 16,
-    xlarge: 24,
-  },
-  margin: {
-    small: 8,
-    medium: 12,
-    large: 16,
-    xlarge: 20,
-  },
-  shadow: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-} as const;
+// Using design tokens from styles
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
+  container: commonStyles.container,
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SIZES.padding.large,
-    paddingVertical: SIZES.padding.medium,
-    backgroundColor: COLORS.background,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    ...commonStyles.header,
     marginTop: 20,
   },
   backButton: {
-    padding: SIZES.padding.small,
-    marginRight: SIZES.margin.small,
+    ...commonStyles.backButton,
+    marginRight: SPACING.margin.sm,
   },
   backIcon: {
     fontSize: 20,
     color: COLORS.primary,
   },
-  searchContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-    borderRadius: SIZES.borderRadius,
-    paddingHorizontal: 15,
-    borderWidth: 2,
-    borderColor: '#2B2D42',
-  },
-  searchInput: {
-    flex: 1,
-    paddingVertical: SIZES.padding.medium,
-    fontSize: 16,
-    color: COLORS.text,
-  },
+  searchContainer: commonStyles.searchContainer,
+  searchInput: commonStyles.searchInput,
   searchButton: {
-    padding: SIZES.padding.small,
+    padding: SPACING.padding.sm,
   },
   searchIconLeft: {
     marginRight: 8,
   },
   searchIcon: {
-    fontSize: 16,
+    fontSize: TYPOGRAPHY.fontSize.lg,
   },
   content: {
     flex: 1,
@@ -349,14 +292,14 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 16,
-    fontSize: 16,
+    fontSize: TYPOGRAPHY.fontSize.lg,
     color: '#666',
   },
   resultsContainer: {
     padding: 16,
   },
   resultsTitle: {
-    fontSize: 18,
+    fontSize: TYPOGRAPHY.fontSize.xl,
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 16,
@@ -377,31 +320,38 @@ const styles = StyleSheet.create({
   resultInfo: {
     paddingHorizontal: 4,
   },
-  resultTitle: {
-    fontSize: 18,
-    fontWeight: '600',
+  resultChannel: {
+    fontSize: TYPOGRAPHY.fontSize.md,
+    fontWeight: '700',
     color: '#333',
-    lineHeight: 22,
+    lineHeight: 18,
+    marginBottom: 4,
+    fontFamily: 'Poppins_700Bold',
+  },
+  resultDescription: {
+    fontSize: TYPOGRAPHY.fontSize.sm,
+    color: '#666',
+    lineHeight: 16,
     marginBottom: 6,
-    fontFamily: 'Poppins_600SemiBold',
+    fontFamily: 'Poppins_400Regular',
   },
   resultViews: {
-    fontSize: 14,
+    fontSize: TYPOGRAPHY.fontSize.md,
     color: '#666',
     marginBottom: 2,
     fontFamily: 'Poppins_400Regular',
-  },
-  resultDuration: {
-    fontSize: 12,
-    color: '#999',
-    fontFamily: 'Poppins_400Regular',
+    textAlign: 'right',
   },
   resultsCount: {
-    fontSize: 16,
+    fontSize: TYPOGRAPHY.fontSize.md,
     color: '#666',
     marginBottom: 8,
     paddingHorizontal: 16,
     fontFamily: 'Poppins_400Regular',
+  },
+  queryText: {
+    fontFamily: 'Poppins_600SemiBold',
+    color: '#333',
   },
   sortRow: {
     flexDirection: 'row',
@@ -414,7 +364,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   sortText: {
-    fontSize: 14,
+    fontSize: TYPOGRAPHY.fontSize.md,
     color: '#2B2D42',
     fontWeight: '500',
     fontFamily: 'Poppins_500Medium',

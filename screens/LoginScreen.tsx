@@ -2,8 +2,8 @@ import React from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, Linking, Alert } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { COLORS, TYPOGRAPHY, SPACING, commonStyles } from '../styles';
 
-// Constants
 const TERMS_URL = 'https://www.google.com';
 const PRIVACY_URL = 'https://www.google.com';
 
@@ -41,7 +41,7 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Logo na górze */}
+  
       <View style={styles.logoContainer}>
         <Image 
           source={require('../assets/logo.png')} 
@@ -50,7 +50,6 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
         />
       </View>
 
-      {/* Ikona w środku */}
       <View style={styles.iconContainer}>
         <Image 
           source={require('../assets/app-icon.png')} 
@@ -59,7 +58,6 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
         />
       </View>
 
-      {/* Tekst powitalny */}
       <View style={styles.welcomeContainer}>
         <Text style={styles.welcomeText}>
           Welcome to the best{'\n'}
@@ -68,7 +66,6 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
         </Text>
       </View>
 
-      {/* Przycisk logowania jako gość */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity 
           style={styles.guestButton} 
@@ -81,7 +78,6 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Tekst z warunkami */}
       <View style={styles.termsContainer}>
         <Text style={styles.termsText}>
           By continuing, you agree with{'\n'}
@@ -92,7 +88,7 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
             accessibilityLabel="Terms and conditions"
             accessibilityHint="Opens terms and conditions in browser"
           >
-            terms and conditions
+            Terms and Conditions
           </Text>
           {' '}and{' '}
           <Text 
@@ -102,7 +98,7 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
             accessibilityLabel="Privacy policy"
             accessibilityHint="Opens privacy policy in browser"
           >
-            privacy policy
+            Privacy Policy
           </Text>
         </Text>
       </View>
@@ -112,8 +108,8 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
 
 export default LoginScreen;
 
-// Design tokens
-const COLORS = {
+
+const LOGIN_COLORS = {
   background: '#8D99AE',
   primary: '#2B2D42',
   white: '#fff',
@@ -121,10 +117,11 @@ const COLORS = {
   link: '#2B2D42',
 } as const;
 
-const SIZES = {
+// LoginScreen specific sizes
+const LOGIN_SIZES = {
   logo: { width: 292, height: 116 },
   icon: { width: 128, height: 128 },
-  borderRadius: 12,
+  borderRadius: SPACING.borderRadius.lg,
   shadow: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -137,7 +134,7 @@ const SIZES = {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: LOGIN_COLORS.background,
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
@@ -149,8 +146,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   logo: {
-    width: SIZES.logo.width,
-    height: SIZES.logo.height,
+    width: LOGIN_SIZES.logo.width,
+    height: LOGIN_SIZES.logo.height,
   },
   iconContainer: {
     flex: 1,
@@ -158,18 +155,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   centerIcon: {
-    width: SIZES.icon.width,
-    height: SIZES.icon.height,
+    width: LOGIN_SIZES.icon.width,
+    height: LOGIN_SIZES.icon.height,
   },
   welcomeContainer: {
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    alignSelf: 'flex-start',
     marginBottom: 30,
+    paddingHorizontal: 20,
   },
   welcomeText: {
     fontSize: 18,
     fontWeight: '600',
     textAlign: 'left',
-    color: COLORS.text,
+    color: LOGIN_COLORS.text,
     lineHeight: 24,
     fontFamily: 'Poppins_600SemiBold',
   },
@@ -178,15 +177,15 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   guestButton: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: LOGIN_COLORS.primary,
     paddingVertical: 15,
     paddingHorizontal: 30,
-    borderRadius: SIZES.borderRadius,
+    borderRadius: LOGIN_SIZES.borderRadius,
     alignItems: 'center',
-    ...SIZES.shadow,
+    ...LOGIN_SIZES.shadow,
   },
   buttonText: {
-    color: COLORS.white,
+    color: LOGIN_COLORS.white,
     fontSize: 16,
     fontWeight: '600',
     fontFamily: 'Poppins_600SemiBold',
@@ -197,13 +196,13 @@ const styles = StyleSheet.create({
   },
   termsText: {
     fontSize: 12,
-    color: COLORS.text,
+    color: LOGIN_COLORS.text,
     textAlign: 'center',
     lineHeight: 16,
     fontFamily: 'Poppins_400Regular',
   },
   linkText: {
-    color: COLORS.link,
+    color: LOGIN_COLORS.link,
     textDecorationLine: 'underline',
     fontWeight: '500',
     fontFamily: 'Poppins_500Medium',

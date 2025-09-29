@@ -20,6 +20,7 @@ import {
   FullscreenIcon,
   PersonIcon
 } from '../utils';
+import { COLORS, TYPOGRAPHY, SPACING, commonStyles } from '../styles';
 
 const { width } = Dimensions.get('window');
 
@@ -79,7 +80,7 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
     };
   }, []);
 
-  // Pobierz szczegóły wideo z API (tytuł, opis, kanał, statystyki)
+  //szczegóły wideo z API (tytuł, opis, kanał, statystyki)
   useEffect(() => {
     const fetchVideoDetails = async (): Promise<void> => {
       if (!videoId) return;
@@ -148,7 +149,7 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
+      
       <View style={styles.header}>
         <TouchableOpacity 
           style={styles.backButton} 
@@ -162,7 +163,6 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Odtwarzacz wideo */}
         <View style={styles.videoContainer}>
           <Video
             source={require('../assets/video/broadchurch.mp4')} // 🔥 asset jako źródło
@@ -179,10 +179,9 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
           />
           {isBuffering && (
             <View style={styles.bufferOverlay}>
-              <Text style={{ color: '#fff' }}>⏳ Buffering...</Text>
+              <Text style={{ color: '#fff' }}>Buffering...</Text>
             </View>
           )}
-          {/* Przycisk fullscreen */}
           <TouchableOpacity 
             style={styles.fullscreenButton} 
             onPress={handleFullscreen}
@@ -194,14 +193,12 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Tytuł */}
         <View style={styles.titleContainer}>
           <Text style={styles.videoTitle}>
             {displayTitle}
           </Text>
         </View>
 
-        {/* Kanał */}
         <View style={styles.channelInfo}>
           <Image
             source={{ uri: 'https://via.placeholder.com/40x40/FF6B6B/FFFFFF?text=RN' }}
@@ -218,7 +215,6 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
           </View>
         </View>
 
-        {/* Sekcje */}
         <View style={styles.detailsContainer}>
           <View style={[styles.detailItem, styles.detailsItem]}>
             <Text style={styles.detailLabel}>Details</Text>
@@ -228,7 +224,6 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
           </View>
         </View>
 
-        {/* Opis */}
         <View style={styles.descriptionContainer}>
           <Text style={styles.descriptionTitle}>Description</Text>
           <Text style={styles.descriptionText} numberOfLines={7}>
@@ -236,7 +231,6 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
           </Text>
         </View>
 
-        {/* Statystyki */}
         <View style={styles.statisticsContainer}>
           <Text style={styles.statisticsTitle}>Statistics</Text>
           <View style={styles.statsButtons}>
@@ -272,7 +266,6 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
         </View>
       </ScrollView>
 
-      {/* Stopka */}
       <Footer />
     </SafeAreaView>
   );
@@ -280,59 +273,13 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
 
 export default VideoDetailsScreen;
 
-// Design tokens
-const COLORS = {
-  background: '#fff',
-  primary: '#007AFF',
-  secondary: '#8D99AE',
-  border: '#e0e0e0',
-  text: '#333',
-  textSecondary: '#666',
-  textMuted: '#999',
-  white: '#fff',
-  red: '#FF6B6B',
-  overlay: 'rgba(0, 0, 0, 0.7)',
-} as const;
 
-const SIZES = {
-  borderRadius: 16,
-  padding: {
-    small: 8,
-    medium: 12,
-    large: 16,
-    xlarge: 24,
-  },
-  margin: {
-    small: 8,
-    medium: 12,
-    large: 16,
-    xlarge: 20,
-  },
-  shadow: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-} as const;
+// Using design tokens from styles
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: COLORS.background 
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SIZES.padding.large,
-    paddingVertical: SIZES.padding.medium,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-  backButton: { 
-    padding: SIZES.padding.small 
-  },
+  container: commonStyles.container,
+  header: commonStyles.header,
+  backButton: commonStyles.backButton,
   backIcon: { 
     fontSize: 20, 
     color: COLORS.primary 
@@ -359,8 +306,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   titleContainer: { 
-    paddingHorizontal: SIZES.padding.large, 
-    paddingVertical: SIZES.padding.medium 
+    paddingHorizontal: SPACING.padding.lg, 
+    paddingVertical: SPACING.padding.md 
   },
   videoTitle: { 
     fontSize: 18, 
@@ -372,14 +319,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingLeft: 8,
-    paddingRight: SIZES.padding.large,
-    paddingVertical: SIZES.padding.medium,
+    paddingRight: SPACING.padding.lg,
+    paddingVertical: SPACING.padding.md,
   },
   channelAvatar: { 
     width: 40, 
     height: 40, 
     borderRadius: 20, 
-    marginRight: SIZES.margin.medium 
+    marginRight: SPACING.margin.md 
   },
   channelDetails: { flex: 1 },
   channelNameRow: {
@@ -398,8 +345,8 @@ const styles = StyleSheet.create({
   },
   detailsContainer: { 
     flexDirection: 'row', 
-    paddingHorizontal: SIZES.padding.large, 
-    paddingVertical: SIZES.padding.large 
+    paddingHorizontal: SPACING.padding.lg, 
+    paddingVertical: SPACING.padding.lg 
   },
   detailItem: {
     flex: 1,

@@ -22,6 +22,7 @@ import {
   SearchIcon,
   SettingsIcon
 } from '../utils';
+import { COLORS, TYPOGRAPHY, SPACING, commonStyles } from '../styles';
 
 const { width } = Dimensions.get('window');
 
@@ -33,6 +34,7 @@ interface YouTubeSearchResult {
     id: { videoId: string };
     snippet: {
       title: string;
+      publishedAt: string;
       thumbnails: {
         medium?: { url: string };
         default?: { url: string };
@@ -45,8 +47,9 @@ const MainAppScreen: React.FC<MainAppScreenProps> = () => {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [videosData, setVideosData] = useState(mockVideos);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Ładuj filmy z API przy starcie
+  //filmy z API przy starcie
   useEffect(() => {
     loadVideosFromAPI();
   }, []);
@@ -56,15 +59,16 @@ const MainAppScreen: React.FC<MainAppScreenProps> = () => {
       id: item.id.videoId,
       title: item.snippet.title,
       thumbnail: item.snippet.thumbnails.medium?.url || item.snippet.thumbnails.default?.url || '',
-      views: 'N/A' // YouTube API nie zwraca views w search
+      publishedAt: item.snippet.publishedAt ? new Date(item.snippet.publishedAt).toLocaleDateString('pl-PL') : 'N/A'
     })) || [];
   }, []);
 
   const loadVideosFromAPI = useCallback(async (): Promise<void> => {
+    setIsLoading(true);
     try {
       const videosByCategory: VideosByCategory = {};
       
-      // Użyj Promise.allSettled dla równoległego ładowania
+      //Promise.allSettled dla równoległego ładowania
       const categoryPromises = CATEGORIES.map(async (category) => {
         try {
           const results = await apiService.getVideosByCategory(category) as YouTubeSearchResult;
@@ -95,6 +99,8 @@ const MainAppScreen: React.FC<MainAppScreenProps> = () => {
     } catch (error) {
       console.error('Error loading videos:', error);
       setVideosData(mockVideos);
+    } finally {
+      setIsLoading(false);
     }
   }, [formatYouTubeResults]);
 
@@ -122,16 +128,23 @@ const MainAppScreen: React.FC<MainAppScreenProps> = () => {
       params: {
         videoId: String(video.id),
         title: video.title,
-        views: video.views,
-        duration: '15:30' // Mock duration
+        publishedAt: video.publishedAt,
+        duration: '15:30'
       }
     });
   }, [router]);
 
   const handleSettings = useCallback((): void => {
-    // Tutaj będzie nawigacja do ustawień
     console.log('Settings clicked');
   }, []);
+
+  const renderSkeletonVideo = useCallback(() => (
+    <View key={`skeleton-${Math.random()}`} style={styles.videoThumbnail}>
+      <View style={styles.skeletonThumbnail} />
+      <View style={styles.skeletonTitle} />
+      <View style={styles.skeletonDate} />
+    </View>
+  ), []);
 
   const renderVideoThumbnail = useCallback((video: Video) => (
     <TouchableOpacity 
@@ -147,8 +160,8 @@ const MainAppScreen: React.FC<MainAppScreenProps> = () => {
         style={styles.thumbnailImage}
         accessibilityLabel={`Thumbnail for ${video.title}`}
       />
-      <Text style={styles.videoTitle} numberOfLines={2}>{video.title}</Text>
-      <Text style={styles.videoViews}>{video.views} views</Text>
+      <Text style={styles.videoTitle} numberOfLines={2}>{video.title || 'No Title'}</Text>
+      <Text style={styles.videoViews}>{video.publishedAt}</Text>
     </TouchableOpacity>
   ), [handleVideoPress]);
 
@@ -173,10 +186,10 @@ const MainAppScreen: React.FC<MainAppScreenProps> = () => {
         contentContainerStyle={styles.scrollContent}
         accessibilityLabel={`${categoryName} videos`}
       >
-        {videos.map(renderVideoThumbnail)}
+        {isLoading ? Array.from({ length: 4 }, (_, index) => renderSkeletonVideo()) : videos.map(renderVideoThumbnail)}
       </ScrollView>
     </View>
-  ), [handleShowMore, renderVideoThumbnail]);
+  ), [handleShowMore, renderVideoThumbnail, renderSkeletonVideo, isLoading]);
 
   // Memoize categories to prevent unnecessary re-renders
   const categoriesList = useMemo(() => 
@@ -187,7 +200,6 @@ const MainAppScreen: React.FC<MainAppScreenProps> = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header z search barem */}
       <View style={styles.header}>
         <View style={styles.searchContainer}>
           <TouchableOpacity
@@ -220,7 +232,6 @@ const MainAppScreen: React.FC<MainAppScreenProps> = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Główna zawartość z kategoriami */}
       <ScrollView 
         style={styles.content} 
         showsVerticalScrollIndicator={false}
@@ -229,7 +240,6 @@ const MainAppScreen: React.FC<MainAppScreenProps> = () => {
         {categoriesList}
       </ScrollView>
 
-      {/* Stopka */}
       <Footer />
     </SafeAreaView>
   );
@@ -237,103 +247,50 @@ const MainAppScreen: React.FC<MainAppScreenProps> = () => {
 
 export default MainAppScreen;
 
-// Design tokens
-const COLORS = {
-  background: '#fff',
-  primary: '#007AFF',
-  secondary: '#f5f5f5',
-  border: '#e0e0e0',
-  text: '#333',
-  textSecondary: '#666',
-  textMuted: '#999',
-  shadow: '#000',
-} as const;
 
-const SIZES = {
-  borderRadius: 16,
-  borderWidth: 2,
-  padding: {
-    small: 8,
-    medium: 12,
-    large: 16,
-  },
-  margin: {
-    small: 8,
-    medium: 12,
-    large: 16,
-  },
-  shadow: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-} as const;
+// Using design tokens from styles
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
+  container: commonStyles.container,
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: SIZES.padding.medium,
-    paddingHorizontal: SIZES.padding.large,
-    backgroundColor: COLORS.background,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-    marginBottom: SIZES.margin.large,
+    ...commonStyles.header,
+    marginBottom: SPACING.margin.lg,
     marginTop: 20,
   },
   searchContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORS.secondary,
-    borderRadius: SIZES.borderRadius,
-    paddingHorizontal: 15,
-    marginRight: SIZES.margin.medium,
-    borderWidth: SIZES.borderWidth,
-    borderColor: '#2B2D42',
+    ...commonStyles.searchContainer,
+    marginRight: SPACING.margin.md,
   },
   searchIcon: {
     marginRight: 8,
   },
   searchIconText: {
-    fontSize: 16,
+    fontSize: TYPOGRAPHY.fontSize.lg,
     color: COLORS.textSecondary,
+    fontFamily: TYPOGRAPHY.fontFamily.regular,
   },
-  searchInput: {
-    flex: 1,
-    paddingVertical: SIZES.padding.medium,
-    fontSize: 16,
-    color: COLORS.text,
-  },
-  settingsButton: {
-    padding: SIZES.padding.small,
-  },
+  searchInput: commonStyles.searchInput,
+  settingsButton: commonStyles.settingsButton,
   settingsIcon: {
     fontSize: 20,
   },
   content: {
     flex: 1,
-    paddingTop: SIZES.padding.small,
-    paddingHorizontal: SIZES.padding.large,
+    paddingTop: SPACING.padding.sm,
+    paddingHorizontal: SPACING.padding.lg,
   },
   categoryContainer: {
     marginBottom: 32,
     paddingHorizontal: 4,
     borderBottomWidth: 1,
     borderBottomColor: '#2B2D42',
-    paddingBottom: SIZES.padding.large,
+    paddingBottom: SPACING.padding.lg,
   },
   categoryHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: SIZES.margin.medium,
+    marginBottom: SPACING.margin.md,
     paddingHorizontal: 4,
   },
   categoryTitle: {
@@ -348,33 +305,21 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingRight: 4,
   },
-  videoThumbnail: {
-    width: 180,
-    marginRight: SIZES.margin.large,
-  },
-  thumbnailImage: {
-    width: 180,
-    height: 112,
-    borderRadius: SIZES.borderRadius,
-    backgroundColor: COLORS.secondary,
-  },
+  videoThumbnail: commonStyles.videoThumbnail,
+  thumbnailImage: commonStyles.thumbnailImage,
   videoTitle: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '600',
-    color: COLORS.text,
-    marginTop: SIZES.margin.small,
-    lineHeight: 18,
+    color: '#000',
+    marginTop: 8,
+    lineHeight: 20,
     fontFamily: 'Poppins_600SemiBold',
+    textAlign: 'left',
   },
-  videoViews: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
-    marginTop: 4,
-    fontFamily: 'Poppins_400Regular',
-  },
+  videoViews: commonStyles.videoViews,
   showMoreLink: {
     paddingVertical: 4,
-    paddingHorizontal: SIZES.padding.small,
+    paddingHorizontal: SPACING.padding.sm,
   },
   showMoreText: {
     fontSize: 14,
@@ -382,5 +327,25 @@ const styles = StyleSheet.create({
     color: '#2B2D42',
     textDecorationLine: 'underline',
     fontFamily: 'Poppins_500Medium',
+  },
+  skeletonThumbnail: {
+    width: 180,
+    height: 112,
+    backgroundColor: '#E0E0E0',
+    borderRadius: SPACING.borderRadius.lg,
+    marginBottom: SPACING.margin.sm,
+  },
+  skeletonTitle: {
+    height: 16,
+    backgroundColor: '#E0E0E0',
+    borderRadius: 4,
+    marginBottom: 4,
+    width: '80%',
+  },
+  skeletonDate: {
+    height: 12,
+    backgroundColor: '#E0E0E0',
+    borderRadius: 4,
+    width: '60%',
   },
 });

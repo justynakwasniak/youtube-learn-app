@@ -1,7 +1,6 @@
 // API
 export { apiService, API_CONFIG } from './api';
 
-// Mock Data
 export {
   Video,
   VideosByCategory,
@@ -15,10 +14,9 @@ export {
   mockChannels,
 } from './mockData';
 
-// Components
 export { default as SortModal } from './SortModal';
 
-// Icons
+
 export { 
   SearchIcon, 
   SettingsIcon, 
@@ -30,5 +28,4 @@ export {
   PersonIcon
 } from './SvgIcon';
 
-// Hooks
 export { useSortModal } from './useSortModal';
