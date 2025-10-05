@@ -165,7 +165,7 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.videoContainer}>
           <Video
-            source={require('../assets/video/broadchurch.mp4')} // 🔥 asset jako źródło
+            source={require('../assets/video/broadchurch.mp4')} 
             style={styles.video}
             controls={true}
             resizeMode="contain"
