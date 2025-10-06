@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { HomeIcon, SearchIcon, COLORS } from '../utils';
+import { useTranslation } from 'react-i18next';
 
 const Footer = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const [pressedButton, setPressedButton] = useState<string | null>(null);
 
@@ -25,7 +27,7 @@ const Footer = () => {
           height={32} 
           color={pressedButton === 'home' ? COLORS.white : COLORS.borderDark} 
         />
-        <Text style={styles.footerText}>Home</Text>
+        <Text style={styles.footerText}>{t('common.home')}</Text>
       </TouchableOpacity>
       
       <TouchableOpacity style={styles.footerItem} onPress={handleSearchPress}>
@@ -34,7 +36,7 @@ const Footer = () => {
           height={32} 
           color={pressedButton === 'search' ? COLORS.white : COLORS.borderDark} 
         />
-        <Text style={styles.footerText}>Search</Text>
+        <Text style={styles.footerText}>{t('common.search')}</Text>
       </TouchableOpacity>
     </View>
   );

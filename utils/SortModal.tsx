@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Modal,
   View,
@@ -56,6 +57,7 @@ const SortModal: React.FC<SortModalProps> = ({
   onSelect,
   onConfirm,
 }) => {
+  const { t } = useTranslation();
   return (
     <Modal
       visible={visible}
@@ -65,7 +67,7 @@ const SortModal: React.FC<SortModalProps> = ({
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Sort records by:</Text>
+          <Text style={styles.modalTitle}>{t('search.sortBy')}</Text>
           
           <View style={styles.sortOptions}>
             {SORT_OPTIONS.map((option) => (
@@ -94,7 +96,7 @@ const SortModal: React.FC<SortModalProps> = ({
             accessibilityLabel="Confirm sort selection"
             accessibilityHint="Applies the selected sort option"
           >
-            <Text style={styles.confirmButtonText}>Confirm</Text>
+            <Text style={styles.confirmButtonText}>{t('common.confirm')}</Text>
           </TouchableOpacity>
         </View>
       </View>

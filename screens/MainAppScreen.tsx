@@ -23,6 +23,7 @@ import {
 } from '../utils';
 import { useYouTubeApi } from '../utils';
 import { COLORS, TYPOGRAPHY, SPACING, commonStyles } from '../styles';
+import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get('window');
 
@@ -43,6 +44,7 @@ interface YouTubeSearchResult {
 }
 
 const MainAppScreen: React.FC<MainAppScreenProps> = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { getVideosByCategory } = useYouTubeApi();
   const [searchQuery, setSearchQuery] = useState('');
@@ -151,7 +153,7 @@ const MainAppScreen: React.FC<MainAppScreenProps> = () => {
       onPress={() => handleVideoPress(video)}
       accessibilityRole="button"
       accessibilityLabel={`Watch video: ${video.title}`}
-      accessibilityHint="Opens video details"
+          accessibilityHint={t('common.showMore')}
     >
       <Image 
         source={{ uri: video.thumbnail }} 
@@ -174,7 +176,7 @@ const MainAppScreen: React.FC<MainAppScreenProps> = () => {
           accessibilityLabel={`Show more ${categoryName} videos`}
           accessibilityHint="Opens search results for this category"
         >
-          <Text style={styles.showMoreText}>Show More</Text>
+          <Text style={styles.showMoreText}>{t('common.showMore')}</Text>
         </TouchableOpacity>
       </View>
       <ScrollView

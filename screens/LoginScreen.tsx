@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Image, TouchableOpacity, Linking, Alert } from 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { COLORS, TYPOGRAPHY, SPACING, commonStyles } from '../styles';
+import { useTranslation } from 'react-i18next';
 
 const TERMS_URL = 'https://www.google.com';
 const PRIVACY_URL = 'https://www.google.com';
@@ -10,6 +11,7 @@ const PRIVACY_URL = 'https://www.google.com';
 interface LoginScreenProps {}
 
 const LoginScreen: React.FC<LoginScreenProps> = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   
   const handleGuestLogin = (): void => {
@@ -59,9 +61,9 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
 
       <View style={styles.welcomeContainer}>
         <Text style={styles.welcomeText}>
-          Welcome to the best{'\n'}
-          YouTube-based learning{'\n'}
-          application
+          {t('login.welcome1')}{'\n'}
+          {t('login.welcome2')}{'\n'}
+          {t('login.welcome3')}
         </Text>
       </View>
 
@@ -73,13 +75,13 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
           accessibilityLabel="Log in as guest"
           accessibilityHint="Continue to the app without creating an account"
         >
-          <Text style={styles.buttonText}>Log in as guest</Text>
+          <Text style={styles.buttonText}>{t('login.guest')}</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.termsContainer}>
         <Text style={styles.termsText}>
-          By continuing, you agree with{'\n'}
+          {t('login.termsPrompt')}{'\n'}
           <Text 
             style={styles.linkText} 
             onPress={handleTermsPress}
@@ -87,7 +89,7 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
             accessibilityLabel="Terms and conditions"
             accessibilityHint="Opens terms and conditions in browser"
           >
-            Terms and Conditions
+            {t('login.terms')}
           </Text>
           {' '}and{' '}
           <Text 
@@ -97,7 +99,7 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
             accessibilityLabel="Privacy policy"
             accessibilityHint="Opens privacy policy in browser"
           >
-            Privacy Policy
+            {t('login.privacy')}
           </Text>
         </Text>
       </View>

@@ -24,6 +24,7 @@ import {
 } from '../utils';
 import { useYouTubeApi } from '../utils';
 import { COLORS, TYPOGRAPHY, SPACING, commonStyles } from '../styles';
+import { useTranslation } from 'react-i18next';
 
 interface SearchScreenProps {}
 
@@ -44,6 +45,7 @@ interface YouTubeSearchResult {
 }
 
 const SearchScreen: React.FC<SearchScreenProps> = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { query, category } = useLocalSearchParams();
   const { searchVideos } = useYouTubeApi();
@@ -186,7 +188,7 @@ const SearchScreen: React.FC<SearchScreenProps> = () => {
           <SearchIcon width={20} height={20} color={COLORS.borderDark} style={styles.searchIconLeft} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search Videos"
+            placeholder={t('common.search') + ' Videos'}
             placeholderTextColor={COLORS.textLight}
             value={typeof searchQuery === 'string' ? searchQuery : ''}
             onChangeText={setSearchQuery}
@@ -203,13 +205,13 @@ const SearchScreen: React.FC<SearchScreenProps> = () => {
         {isLoading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={COLORS.primary} />
-            <Text style={styles.loadingText}>Searching...</Text>
+            <Text style={styles.loadingText}>{t('common.search')}...</Text>
           </View>
         ) : (
           <View style={styles.resultsContainer}>
           
             <Text style={styles.resultsCount}>
-              {searchResults.length} result{searchResults.length !== 1 ? 's' : ''} found for <Text style={styles.queryText}>"{displayQuery}"</Text>
+              {searchResults.length} {t('search.resultsFor')} <Text style={styles.queryText}>"{displayQuery}"</Text>
             </Text>
             
             
@@ -221,7 +223,7 @@ const SearchScreen: React.FC<SearchScreenProps> = () => {
                 accessibilityLabel="Sort options"
                 accessibilityHint="Opens sort options modal"
               >
-                <Text style={styles.sortText}>Sort by: <Text style={styles.sortOptionBold}>{selectedSortOption}</Text></Text>
+                <Text style={styles.sortText}>{t('search.sortBy')} <Text style={styles.sortOptionBold}>{selectedSortOption}</Text></Text>
               </TouchableOpacity>
             </View>
 
