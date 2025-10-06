@@ -17,8 +17,8 @@ export { default as SortModal } from './SortModal';
 
 
 
-export { useSortModal } from './useSortModal';
-export { useYouTubeApi } from './useYouTubeApi';
+export { useSortModal } from '../hooks/useSortModal';
+export { useYouTubeApi } from '../hooks/useYouTubeApi';
 
 export { default as SearchIcon } from './icons/SearchIcon';
 export { default as SettingsIcon } from './icons/SettingsIcon';

@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { getVideosByCategory, searchVideos, getCategories, getVideoDetails } from './api';
+import { getVideosByCategory, searchVideos, getCategories, getVideoDetails } from '../utils/api';
 
 type ApiCall<TArgs extends any[], TResp> = (...args: TArgs) => Promise<TResp>;
 
