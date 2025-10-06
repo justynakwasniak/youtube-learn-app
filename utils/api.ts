@@ -1,6 +1,6 @@
 import { API_BASE_URL, API_VIDEOS_ENDPOINT, API_SEARCH_ENDPOINT, API_CATEGORIES_ENDPOINT, YOUTUBE_API_KEY } from '@env';
+import axios from 'axios';
 
-// API Configuration
 export const API_CONFIG = {
   BASE_URL: API_BASE_URL || 'https://www.googleapis.com/youtube/v3',
   API_KEY: YOUTUBE_API_KEY || '',
@@ -11,7 +11,6 @@ export const API_CONFIG = {
   }
 };
 
-// Debug logging
 console.log('API_CONFIG loaded:', {
   BASE_URL: API_CONFIG.BASE_URL,
   API_KEY: API_CONFIG.API_KEY ? `${API_CONFIG.API_KEY.substring(0, 10)}...` : 'EMPTY',
@@ -20,93 +19,62 @@ console.log('API_CONFIG loaded:', {
 
 
 
-// API Service Class
-export class ApiService {
-  private baseURL: string;
+export const axiosClient = axios.create({
+  baseURL: API_CONFIG.BASE_URL,
+  headers: { 'Content-Type': 'application/json' },
+  timeout: 20000,
+});
 
-  constructor() {
-    this.baseURL = API_CONFIG.BASE_URL;
+axiosClient.interceptors.request.use((config) => {
+  const params = new URLSearchParams(config.params as Record<string, string> || {});
+  if (API_CONFIG.API_KEY) {
+    params.set('key', API_CONFIG.API_KEY);
   }
+  return { ...config, params };
+});
 
-  // Generic fetch method for YouTube API
-  private async fetchData<T>(endpoint: string, params: Record<string, string> = {}): Promise<T> {
-    const urlParams = new URLSearchParams({
-      key: API_CONFIG.API_KEY,
-      ...params
-    });
-    
-    const url = `${this.baseURL}${endpoint}?${urlParams}`;
-    
-    console.log('Making API request to:', url);
-    console.log('API Key present:', !!API_CONFIG.API_KEY);
-    console.log('Request params:', params);
-    
-    try {
-      const response = await fetch(url, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      console.log('API Response status:', response.status);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('API Error Response:', errorText);
-        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-      }
-
-      const data = await response.json();
-      console.log('API Success:', { itemCount: data.items?.length || 0 });
-      return data;
-    } catch (error) {
-      console.error('API Error:', error);
-      throw error;
-    }
-  }
-
-  // Get videos by category (search for videos in specific category)
-  async getVideosByCategory(category: string) {
-    return this.fetchData(API_CONFIG.ENDPOINTS.VIDEOS, {
-      part: 'snippet',
-      q: category,
-      type: 'video',
-      maxResults: '10',
-      order: 'relevance'
-    });
-  }
-
-  // Search videos
-  async searchVideos(query: string, sortBy?: string) {
-    const order = sortBy === 'Most Popular' ? 'viewCount' : 
-                  sortBy === 'Upload Date Latest' ? 'date' : 
-                  sortBy === 'Upload Date Oldest' ? 'date' : 'relevance';
-    
-    return this.fetchData(API_CONFIG.ENDPOINTS.SEARCH, {
-      part: 'snippet',
-      q: query,
-      type: 'video',
-      maxResults: '10',
-      order: order
-    });
-  }
-
-  // Get all categories
-  async getCategories() {
-    return this.fetchData(API_CONFIG.ENDPOINTS.CATEGORIES, {
-      part: 'snippet',
-      regionCode: 'US'
-    });
-  }
-
-  // Get video details
-  async getVideoDetails(videoId: string) {
-    return this.fetchData('/videos', {
-      part: 'snippet,statistics,contentDetails',
-      id: videoId
-    });
-  }
+async function fetchData<T>(endpoint: string, params: Record<string, string> = {}): Promise<T> {
+  console.log('Making API request to:', endpoint);
+  console.log('API Key present:', !!API_CONFIG.API_KEY);
+  console.log('Request params:', params);
+  const response = await axiosClient.get<T>(endpoint, { params });
+  return response.data as T;
 }
 
-// Export singleton instance
-export const apiService = new ApiService();
+export async function getVideosByCategory(category: string) {
+  return fetchData(API_CONFIG.ENDPOINTS.VIDEOS, {
+    part: 'snippet',
+    q: category,
+    type: 'video',
+    maxResults: '10',
+    order: 'relevance'
+  });
+}
+
+export async function searchVideos(query: string, sortBy?: string) {
+  const order = sortBy === 'Most Popular' ? 'viewCount' : 
+                sortBy === 'Upload Date Latest' ? 'date' : 
+                sortBy === 'Upload Date Oldest' ? 'date' : 'relevance';
+  
+  return fetchData(API_CONFIG.ENDPOINTS.SEARCH, {
+    part: 'snippet',
+    q: query,
+    type: 'video',
+    maxResults: '10',
+    order: order
+  });
+}
+
+export async function getCategories() {
+  return fetchData(API_CONFIG.ENDPOINTS.CATEGORIES, {
+    part: 'snippet',
+    regionCode: 'US'
+  });
+}
+
+export async function getVideoDetails(videoId: string) {
+  return fetchData('/videos', {
+    part: 'snippet,statistics,contentDetails',
+    id: videoId
+  });
+}

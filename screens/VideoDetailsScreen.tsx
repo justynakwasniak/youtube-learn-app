@@ -13,18 +13,17 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import Video, { VideoRef } from 'react-native-video';
 import Footer from '../components/Footer';
 import { 
-  apiService,
   BackArrowIcon,
   ViewsIcon,
   LikesIcon,
   FullscreenIcon,
   PersonIcon
 } from '../utils';
+import { useYouTubeApi } from '../utils';
 import { COLORS, TYPOGRAPHY, SPACING, commonStyles } from '../styles';
 
 const { width } = Dimensions.get('window');
 
-// Types
 interface VideoDetailsScreenProps {}
 
 interface VideoDetails {
@@ -55,6 +54,7 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
   const router = useRouter();
   const { videoId, title } = useLocalSearchParams();
   const videoRef = useRef<VideoRef>(null);
+  const { getVideoDetails } = useYouTubeApi();
 
   const [isBuffering, setIsBuffering] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -80,14 +80,13 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
     };
   }, []);
 
-  //szczegóły wideo z API (tytuł, opis, kanał, statystyki)
   useEffect(() => {
     const fetchVideoDetails = async (): Promise<void> => {
       if (!videoId) return;
 
       setIsLoading(true);
       try {
-        const details = await apiService.getVideoDetails(videoId as string) as YouTubeVideoDetailsResult;
+        const details = await getVideoDetails.call(videoId as string) as YouTubeVideoDetailsResult;
         const formattedDetails = formatYouTubeVideoDetails(details);
         
         if (formattedDetails) {
@@ -102,7 +101,7 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
     };
 
     fetchVideoDetails();
-  }, [videoId, formatYouTubeVideoDetails]);
+  }, [videoId, formatYouTubeVideoDetails, getVideoDetails]);
 
   const handleBack = useCallback((): void => {
     router.back();
@@ -126,7 +125,6 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
     return num.toString();
   }, []);
 
-  // Memoize formatted values to prevent unnecessary recalculations
   const formattedViewCount = useMemo(() => 
     videoDetails?.viewCount ? formatNumber(parseInt(videoDetails.viewCount)) : '0', 
     [videoDetails?.viewCount, formatNumber]
@@ -273,8 +271,6 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
 
 export default VideoDetailsScreen;
 
-
-// Using design tokens from styles
 
 const styles = StyleSheet.create({
   container: commonStyles.container,

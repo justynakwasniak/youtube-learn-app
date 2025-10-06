@@ -13,7 +13,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import Footer from '../components/Footer';
 import { 
-  apiService, 
   extendedMockSearchResults, 
   mockChannels, 
   ExtendedVideo, 
@@ -23,9 +22,9 @@ import {
   SearchIcon,
   BackArrowIcon
 } from '../utils';
+import { useYouTubeApi } from '../utils';
 import { COLORS, TYPOGRAPHY, SPACING, commonStyles } from '../styles';
 
-// Types
 interface SearchScreenProps {}
 
 interface YouTubeSearchResult {
@@ -47,11 +46,11 @@ interface YouTubeSearchResult {
 const SearchScreen: React.FC<SearchScreenProps> = () => {
   const router = useRouter();
   const { query, category } = useLocalSearchParams();
+  const { searchVideos } = useYouTubeApi();
   const [searchQuery, setSearchQuery] = useState(Array.isArray(query) ? query[0] || '' : query || '');
   const [searchResults, setSearchResults] = useState(extendedMockSearchResults.slice(0, 2));
   const [isLoading, setIsLoading] = useState(false);
   
-  // Use sort modal hook
   const {
     showSortModal,
     selectedSortOption,
@@ -102,10 +101,9 @@ const SearchScreen: React.FC<SearchScreenProps> = () => {
     setIsLoading(true);
   
     try {
-      const results = await apiService.searchVideos(searchTerm, selectedSortOption) as YouTubeSearchResult;
+      const results = await searchVideos.call(searchTerm, selectedSortOption) as YouTubeSearchResult;
       const formattedResults = formatYouTubeResults(results);
   
-      // Fallback jeśli API nic nie zwróci
       if (formattedResults.length === 0) {
         setSearchResults(getFallbackResults(searchTerm));
       } else {
@@ -117,7 +115,7 @@ const SearchScreen: React.FC<SearchScreenProps> = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedSortOption, formatYouTubeResults, getFallbackResults]);
+  }, [selectedSortOption, formatYouTubeResults, getFallbackResults, searchVideos]);
   
   
 
@@ -168,13 +166,11 @@ const SearchScreen: React.FC<SearchScreenProps> = () => {
     </TouchableOpacity>
   ), [handleVideoPress]);
 
-  // Memoize search results to prevent unnecessary re-renders
   const memoizedSearchResults = useMemo(() => 
     searchResults.map(renderSearchResult), 
     [searchResults, renderSearchResult]
   );
 
-  // Memoize search query display
   const displayQuery = useMemo(() => 
     typeof searchQuery === 'string' ? searchQuery : 
     Array.isArray(category) ? category[0] : 
@@ -253,8 +249,6 @@ const SearchScreen: React.FC<SearchScreenProps> = () => {
 };
 
 export default SearchScreen;
-
-// Using design tokens from styles
 
 const styles = StyleSheet.create({
   container: commonStyles.container,

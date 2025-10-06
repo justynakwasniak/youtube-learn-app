@@ -2,7 +2,6 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
-// Types
 interface SvgIconProps {
   width?: number;
   height?: number;
@@ -10,7 +9,6 @@ interface SvgIconProps {
   style?: any;
 }
 
-// Search Icon Component
 export const SearchIcon: React.FC<SvgIconProps> = ({ 
   width = 24, 
   height = 24, 
@@ -30,7 +28,6 @@ export const SearchIcon: React.FC<SvgIconProps> = ({
   </View>
 );
 
-// Settings Icon Component
 export const SettingsIcon: React.FC<SvgIconProps> = ({ 
   width = 24, 
   height = 24, 
@@ -53,7 +50,6 @@ export const SettingsIcon: React.FC<SvgIconProps> = ({
   </View>
 );
 
-// Home Icon Component
 export const HomeIcon: React.FC<SvgIconProps> = ({ 
   width = 24, 
   height = 24, 
@@ -72,7 +68,6 @@ export const HomeIcon: React.FC<SvgIconProps> = ({
   </View>
 );
 
-// Back Arrow Icon Component
 export const BackArrowIcon: React.FC<SvgIconProps> = ({ 
   width = 24, 
   height = 24, 
@@ -92,7 +87,6 @@ export const BackArrowIcon: React.FC<SvgIconProps> = ({
   </View>
 );
 
-// Views Icon Component
 export const ViewsIcon: React.FC<SvgIconProps> = ({ 
   width = 24, 
   height = 24, 
@@ -112,7 +106,6 @@ export const ViewsIcon: React.FC<SvgIconProps> = ({
   </View>
 );
 
-// Likes Icon Component
 export const LikesIcon: React.FC<SvgIconProps> = ({ 
   width = 24, 
   height = 24, 
@@ -146,7 +139,6 @@ export const LikesIcon: React.FC<SvgIconProps> = ({
   </View>
 );
 
-// Fullscreen Icon Component
 export const FullscreenIcon: React.FC<SvgIconProps> = ({ 
   width = 24, 
   height = 24, 
@@ -166,7 +158,6 @@ export const FullscreenIcon: React.FC<SvgIconProps> = ({
   </View>
 );
 
-// Person Icon Component
 export const PersonIcon: React.FC<SvgIconProps> = ({ 
   width = 24, 
   height = 24, 

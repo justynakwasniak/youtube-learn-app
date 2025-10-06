@@ -1,5 +1,4 @@
-// API
-export { apiService, API_CONFIG } from './api';
+export { API_CONFIG, axiosClient, getVideosByCategory, searchVideos, getCategories, getVideoDetails } from './api';
 
 export {
   Video,
@@ -29,3 +28,4 @@ export {
 } from './SvgIcon';
 
 export { useSortModal } from './useSortModal';
+export { useYouTubeApi } from './useYouTubeApi';

@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
 
-// Types
 interface UseSortModalReturn {
   showSortModal: boolean;
   selectedSortOption: string;

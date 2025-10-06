@@ -7,7 +7,6 @@ import {
   StyleSheet,
 } from 'react-native';
 
-// Types
 interface SortOption {
   id: string;
   label: string;

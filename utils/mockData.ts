@@ -1,4 +1,3 @@
-// Types
 export interface Video {
   id: string | number;
   title: string;
@@ -13,7 +12,6 @@ export interface VideosByCategory {
 export const CATEGORIES = ['React Native', 'React', 'TypeScript', 'JavaScript'] as const;
 export const MAX_VIDEOS_PER_CATEGORY = 4;
 
-// Mock data dla filmów (fallback)
 export const mockVideos: VideosByCategory = {
   'React Native': [
     { id: 1, title: 'React Native Tutorial', thumbnail: 'https://via.placeholder.com/200x120/FF6B6B/FFFFFF?text=RN+1', publishedAt: '2024-01-15' },
@@ -41,7 +39,6 @@ export const mockVideos: VideosByCategory = {
   ],
 };
 
-// Extended Video interface for SearchScreen
 export interface ExtendedVideo extends Video {
   duration?: string;
   category?: string;
@@ -49,7 +46,6 @@ export interface ExtendedVideo extends Video {
   description?: string;
 }
 
-// Mock data dla wyszukiwania
 export const mockSearchResults: Video[] = [
   { id: 1, title: 'React Native Tutorial for Beginners', thumbnail: 'https://via.placeholder.com/200x120/FF6B6B/FFFFFF?text=RN+Tutorial', publishedAt: '2024-01-15' },
   { id: 2, title: 'Advanced React Patterns', thumbnail: 'https://via.placeholder.com/200x120/4ECDC4/FFFFFF?text=React+Patterns', publishedAt: '2024-01-12' },
@@ -59,7 +55,6 @@ export const mockSearchResults: Video[] = [
   { id: 6, title: 'Node.js Backend Development', thumbnail: 'https://via.placeholder.com/200x120/DDA0DD/FFFFFF?text=Node.js', publishedAt: '2024-01-03' },
 ];
 
-// Extended mock data dla SearchScreen
 export const extendedMockSearchResults: ExtendedVideo[] = [
   { id: 1, title: 'React Native Tutorial for Beginners', thumbnail: 'https://via.placeholder.com/200x120/FF6B6B/FFFFFF?text=RN+Tutorial', publishedAt: '2024-01-15', duration: '15:30', category: 'React Native', channelTitle: 'React Native Academy', description: 'Complete beginner guide to React Native development' },
   { id: 2, title: 'Advanced React Patterns', thumbnail: 'https://via.placeholder.com/200x120/4ECDC4/FFFFFF?text=React+Patterns', publishedAt: '2024-01-12', duration: '22:15', category: 'React', channelTitle: 'React Experts', description: 'Learn advanced React patterns and techniques' },
@@ -73,7 +68,6 @@ export const extendedMockSearchResults: ExtendedVideo[] = [
   { id: 10, title: 'TypeScript Generics Explained', thumbnail: 'https://via.placeholder.com/200x120/85C1E9/FFFFFF?text=TS+Generics', publishedAt: '2023-12-22', duration: '24:15', category: 'TypeScript', channelTitle: 'Generic Masters', description: 'Deep dive into TypeScript generics' },
 ];
 
-// Mock data dla kanałów
 export interface Channel {
   id: number;
   name: string;

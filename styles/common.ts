@@ -3,15 +3,12 @@ import { COLORS } from './colors';
 import { TYPOGRAPHY } from './typography';
 import { SPACING } from './spacing';
 
-// Common styles used across multiple screens
 export const commonStyles = StyleSheet.create({
-  // Container styles
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
   },
   
-  // Text styles
   title: {
     fontSize: TYPOGRAPHY.fontSize.xl,
     fontWeight: TYPOGRAPHY.fontWeight.semiBold,
@@ -42,7 +39,6 @@ export const commonStyles = StyleSheet.create({
     lineHeight: TYPOGRAPHY.lineHeight.tight,
   },
   
-  // Button styles
   primaryButton: {
     backgroundColor: COLORS.primary,
     paddingVertical: SPACING.padding.md,
@@ -59,7 +55,6 @@ export const commonStyles = StyleSheet.create({
     fontFamily: TYPOGRAPHY.fontFamily.semiBold,
   },
   
-  // Input styles
   input: {
     borderWidth: SPACING.borderWidth.normal,
     borderColor: COLORS.borderDark,
@@ -71,7 +66,6 @@ export const commonStyles = StyleSheet.create({
     fontFamily: TYPOGRAPHY.fontFamily.regular,
   },
   
-  // Card styles
   card: {
     backgroundColor: COLORS.background,
     borderRadius: SPACING.borderRadius.lg,
@@ -87,7 +81,6 @@ export const commonStyles = StyleSheet.create({
     elevation: 3,
   },
   
-  // Loading styles
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -103,13 +96,10 @@ export const commonStyles = StyleSheet.create({
     fontFamily: TYPOGRAPHY.fontFamily.regular,
   },
   
-  // Skeleton styles
   skeleton: {
     backgroundColor: COLORS.skeleton,
     borderRadius: SPACING.borderRadius.sm,
   },
-
-  // Header styles
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -119,8 +109,6 @@ export const commonStyles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
   },
-
-  // Search container styles
   searchContainer: {
     flex: 1,
     flexDirection: 'row',
@@ -139,8 +127,6 @@ export const commonStyles = StyleSheet.create({
     color: COLORS.text,
     fontFamily: TYPOGRAPHY.fontFamily.regular,
   },
-
-  // Video thumbnail styles
   videoThumbnail: {
     width: 180,
     marginRight: SPACING.margin.lg,
@@ -152,8 +138,6 @@ export const commonStyles = StyleSheet.create({
     borderRadius: SPACING.borderRadius.lg,
     backgroundColor: COLORS.secondary,
   },
-
-  // Video info styles
   videoTitle: {
     fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.semiBold,
@@ -170,17 +154,12 @@ export const commonStyles = StyleSheet.create({
     fontFamily: TYPOGRAPHY.fontFamily.regular,
     textAlign: 'right',
   },
-
-  // Button styles
   backButton: {
     padding: SPACING.padding.sm,
   },
-
   settingsButton: {
     padding: SPACING.padding.sm,
   },
-
-  // Shadow styles
   shadow: {
     shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: 2 },

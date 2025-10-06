@@ -7,7 +7,6 @@ import { COLORS, TYPOGRAPHY, SPACING, commonStyles } from '../styles';
 const TERMS_URL = 'https://www.google.com';
 const PRIVACY_URL = 'https://www.google.com';
 
-// Types
 interface LoginScreenProps {}
 
 const LoginScreen: React.FC<LoginScreenProps> = () => {
@@ -117,7 +116,6 @@ const LOGIN_COLORS = {
   link: '#2B2D42',
 } as const;
 
-// LoginScreen specific sizes
 const LOGIN_SIZES = {
   logo: { width: 292, height: 116 },
   icon: { width: 128, height: 128 },

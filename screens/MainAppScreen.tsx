@@ -13,7 +13,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import Footer from '../components/Footer';
 import { 
-  apiService,
   Video, 
   VideosByCategory, 
   CATEGORIES, 
@@ -22,11 +21,11 @@ import {
   SearchIcon,
   SettingsIcon
 } from '../utils';
+import { useYouTubeApi } from '../utils';
 import { COLORS, TYPOGRAPHY, SPACING, commonStyles } from '../styles';
 
 const { width } = Dimensions.get('window');
 
-// Types
 interface MainAppScreenProps {}
 
 interface YouTubeSearchResult {
@@ -45,11 +44,11 @@ interface YouTubeSearchResult {
 
 const MainAppScreen: React.FC<MainAppScreenProps> = () => {
   const router = useRouter();
+  const { getVideosByCategory } = useYouTubeApi();
   const [searchQuery, setSearchQuery] = useState('');
   const [videosData, setVideosData] = useState(mockVideos);
   const [isLoading, setIsLoading] = useState(true);
 
-  //filmy z API przy starcie
   useEffect(() => {
     loadVideosFromAPI();
   }, []);
@@ -68,10 +67,9 @@ const MainAppScreen: React.FC<MainAppScreenProps> = () => {
     try {
       const videosByCategory: VideosByCategory = {};
       
-      //Promise.allSettled dla równoległego ładowania
       const categoryPromises = CATEGORIES.map(async (category) => {
         try {
-          const results = await apiService.getVideosByCategory(category) as YouTubeSearchResult;
+          const results = await getVideosByCategory.call(category) as YouTubeSearchResult;
           const formattedVideos = formatYouTubeResults(results);
           
           return {
@@ -102,7 +100,7 @@ const MainAppScreen: React.FC<MainAppScreenProps> = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [formatYouTubeResults]);
+  }, [formatYouTubeResults, getVideosByCategory]);
 
   const handleSearch = useCallback((): void => {
     const trimmedQuery = searchQuery.trim();
@@ -191,7 +189,6 @@ const MainAppScreen: React.FC<MainAppScreenProps> = () => {
     </View>
   ), [handleShowMore, renderVideoThumbnail, renderSkeletonVideo, isLoading]);
 
-  // Memoize categories to prevent unnecessary re-renders
   const categoriesList = useMemo(() => 
     Object.entries(videosData).map(([category, videos]) => 
       renderCategory(category, videos)
@@ -247,8 +244,6 @@ const MainAppScreen: React.FC<MainAppScreenProps> = () => {
 
 export default MainAppScreen;
 
-
-// Using design tokens from styles
 
 const styles = StyleSheet.create({
   container: commonStyles.container,

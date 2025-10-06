@@ -1,6 +1,4 @@
-// Design tokens - Typography
 export const TYPOGRAPHY = {
-  // Font families
   fontFamily: {
     regular: 'Poppins_400Regular',
     medium: 'Poppins_500Medium',
@@ -8,7 +6,6 @@ export const TYPOGRAPHY = {
     bold: 'Poppins_700Bold',
   },
   
-  // Font sizes
   fontSize: {
     xs: 10,
     sm: 12,
@@ -19,7 +16,6 @@ export const TYPOGRAPHY = {
     xxxl: 24,
   },
   
-  // Line heights
   lineHeight: {
     tight: 14,
     normal: 16,
@@ -29,7 +25,6 @@ export const TYPOGRAPHY = {
     superLoose: 24,
   },
   
-  // Font weights
   fontWeight: {
     normal: '400',
     medium: '500',
