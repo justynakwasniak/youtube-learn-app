@@ -156,7 +156,7 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
           accessibilityLabel="Go back"
           accessibilityHint="Returns to previous screen"
         >
-          <BackArrowIcon width={20} height={20} color="#007AFF" />
+          <BackArrowIcon width={20} height={20} color={COLORS.primary} />
         </TouchableOpacity>
       </View>
 
@@ -177,7 +177,7 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
           />
           {isBuffering && (
             <View style={styles.bufferOverlay}>
-              <Text style={{ color: '#fff' }}>Buffering...</Text>
+              <Text style={{ color: COLORS.white }}>Buffering...</Text>
             </View>
           )}
           <TouchableOpacity 
@@ -187,7 +187,7 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
             accessibilityLabel="Fullscreen"
             accessibilityHint="Opens video in fullscreen mode"
           >
-            <FullscreenIcon width={16} height={16} color="#fff" />
+            <FullscreenIcon width={16} height={16} color={COLORS.white} />
           </TouchableOpacity>
         </View>
 
@@ -205,7 +205,7 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
           />
           <View style={styles.channelDetails}>
             <View style={styles.channelNameRow}>
-              <PersonIcon width={35} height={25} color="#2B2D42" style={styles.personIcon} />
+              <PersonIcon width={35} height={25} color={COLORS.borderDark} style={styles.personIcon} />
               <Text style={styles.channelName}>
                 {displayChannelTitle}
               </Text>
@@ -237,7 +237,7 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
               accessibilityRole="button"
               accessibilityLabel={`${formattedViewCount} views`}
             >
-              <ViewsIcon width={18} height={18} color="#fff" style={styles.statIcon} />
+              <ViewsIcon width={18} height={18} color={COLORS.white} style={styles.statIcon} />
               <Text style={styles.statText}>
                 {formattedViewCount} views
               </Text>
@@ -253,7 +253,7 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
               <LikesIcon 
                 width={18} 
                 height={18} 
-                color={isLiked ? "#FF6B6B" : "#fff"} 
+                color={isLiked ? COLORS.error : COLORS.white} 
                 style={styles.statIcon}
               />
               <Text style={[styles.statText, isLiked && styles.likedText]}>
@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
     color: COLORS.primary 
   },
   content: { flex: 1 },
-  videoContainer: { width: '100%', height: 220, backgroundColor: '#000' },
+  videoContainer: { width: '100%', height: 220, backgroundColor: COLORS.black },
   video: { width: '100%', height: '100%' },
   fullscreenButton: {
     position: 'absolute',
@@ -347,26 +347,26 @@ const styles = StyleSheet.create({
   detailItem: {
     flex: 1,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: COLORS.border,
     paddingBottom: 8,
   },
-  detailsItem: { borderBottomWidth: 2, borderBottomColor: '#2B2D42' },
+  detailsItem: { borderBottomWidth: 2, borderBottomColor: COLORS.borderDark },
   detailLabel: { fontSize: 14, fontWeight: 'bold', textAlign: 'center' },
   descriptionContainer: { paddingHorizontal: 16, paddingVertical: 16 },
   descriptionTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 8 },
-  descriptionText: { fontSize: 14, color: '#666', lineHeight: 18 },
+  descriptionText: { fontSize: 14, color: COLORS.textSecondary, lineHeight: 18 },
   statisticsContainer: {
     paddingHorizontal: 16,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: COLORS.border,
   },
   statisticsTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 12 },
   statsButtons: { flexDirection: 'row', justifyContent: 'space-around' },
   statButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#2B2D42',
+    backgroundColor: COLORS.borderDark,
     width: 136,
     height: 32,
     borderRadius: 8,
@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
   },
   likedButton: { backgroundColor: '#FFE5E5' },
   statIcon: { fontSize: 16, marginRight: 6, marginLeft: -8 },
-  statText: { fontSize: 14, fontWeight: '500', color: '#fff' },
-  likedText: { color: '#FF6B6B' },
+  statText: { fontSize: 14, fontWeight: '500', color: COLORS.white },
+  likedText: { color: COLORS.error },
 });
 

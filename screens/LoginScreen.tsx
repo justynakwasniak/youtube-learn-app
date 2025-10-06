@@ -109,11 +109,11 @@ export default LoginScreen;
 
 
 const LOGIN_COLORS = {
-  background: '#8D99AE',
-  primary: '#2B2D42',
-  white: '#fff',
-  text: '#fff',
-  link: '#2B2D42',
+  background: COLORS.mutedBackground,
+  primary: COLORS.borderDark,
+  white: COLORS.white,
+  text: COLORS.white,
+  link: COLORS.borderDark,
 } as const;
 
 const LOGIN_SIZES = {
@@ -121,7 +121,7 @@ const LOGIN_SIZES = {
   icon: { width: 128, height: 128 },
   borderRadius: SPACING.borderRadius.lg,
   shadow: {
-    shadowColor: '#000',
+    shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 3.84,

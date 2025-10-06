@@ -1,6 +1,7 @@
 export const COLORS = {
   primary: '#007AFF',
   secondary: '#F5F5F5',
+  mutedBackground: '#8D99AE',
   
   text: '#333333',
   textSecondary: '#666666',

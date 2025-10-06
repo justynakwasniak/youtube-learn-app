@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 import { useRouter } from 'expo-router';
-import { HomeIcon, SearchIcon } from '../utils/SvgIcon';
+import { HomeIcon, SearchIcon, COLORS } from '../utils';
 
 const Footer = () => {
   const router = useRouter();
@@ -23,7 +23,7 @@ const Footer = () => {
         <HomeIcon 
           width={32} 
           height={32} 
-          color={pressedButton === 'home' ? '#ffffff' : '#2B2D42'} 
+          color={pressedButton === 'home' ? COLORS.white : COLORS.borderDark} 
         />
         <Text style={styles.footerText}>Home</Text>
       </TouchableOpacity>
@@ -32,7 +32,7 @@ const Footer = () => {
         <SearchIcon 
           width={32} 
           height={32} 
-          color={pressedButton === 'search' ? '#ffffff' : '#2B2D42'} 
+          color={pressedButton === 'search' ? COLORS.white : COLORS.borderDark} 
         />
         <Text style={styles.footerText}>Search</Text>
       </TouchableOpacity>
@@ -45,9 +45,9 @@ export default Footer;
 const styles = StyleSheet.create({
   footer: {
     flexDirection: 'row',
-    backgroundColor: '#8D99AE',
+    backgroundColor: COLORS.mutedBackground,
     borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
+    borderTopColor: COLORS.border,
     paddingVertical: 12,
     paddingHorizontal: 0,
     justifyContent: 'space-around',
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 14,
-    color: '#2B2D42',
+    color: COLORS.borderDark,
     fontWeight: '500',
     fontFamily: 'Poppins_500Medium',
     marginTop: 4,

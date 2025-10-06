@@ -183,11 +183,11 @@ const SearchScreen: React.FC<SearchScreenProps> = () => {
       <View style={styles.header}>
         
         <View style={styles.searchContainer}>
-          <SearchIcon width={20} height={20} color="#2B2D42" style={styles.searchIconLeft} />
+          <SearchIcon width={20} height={20} color={COLORS.borderDark} style={styles.searchIconLeft} />
           <TextInput
             style={styles.searchInput}
             placeholder="Search Videos"
-            placeholderTextColor="#999"
+            placeholderTextColor={COLORS.textLight}
             value={typeof searchQuery === 'string' ? searchQuery : ''}
             onChangeText={setSearchQuery}
             onSubmitEditing={handleSearch}
@@ -202,7 +202,7 @@ const SearchScreen: React.FC<SearchScreenProps> = () => {
       <ScrollView style={styles.content}>
         {isLoading ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#007AFF" />
+            <ActivityIndicator size="large" color={COLORS.primary} />
             <Text style={styles.loadingText}>Searching...</Text>
           </View>
         ) : (
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 16,
     fontSize: TYPOGRAPHY.fontSize.lg,
-    color: '#666',
+    color: COLORS.textSecondary,
   },
   resultsContainer: {
     padding: 16,
@@ -295,20 +295,20 @@ const styles = StyleSheet.create({
   resultsTitle: {
     fontSize: TYPOGRAPHY.fontSize.xl,
     fontWeight: 'bold',
-    color: '#333',
+    color: COLORS.text,
     marginBottom: 16,
   },
   searchResult: {
     marginBottom: 24,
     paddingBottom: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: COLORS.border,
   },
   resultThumbnail: {
     width: '100%',
     height: 200,
     borderRadius: 12,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: COLORS.border,
     marginBottom: 12,
   },
   resultInfo: {
@@ -317,35 +317,35 @@ const styles = StyleSheet.create({
   resultChannel: {
     fontSize: TYPOGRAPHY.fontSize.md,
     fontWeight: '700',
-    color: '#333',
+    color: COLORS.text,
     lineHeight: 18,
     marginBottom: 4,
     fontFamily: 'Poppins_700Bold',
   },
   resultDescription: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: '#666',
+    color: COLORS.textSecondary,
     lineHeight: 16,
     marginBottom: 6,
     fontFamily: 'Poppins_400Regular',
   },
   resultViews: {
     fontSize: TYPOGRAPHY.fontSize.md,
-    color: '#666',
+    color: COLORS.textSecondary,
     marginBottom: 2,
     fontFamily: 'Poppins_400Regular',
     textAlign: 'right',
   },
   resultsCount: {
     fontSize: TYPOGRAPHY.fontSize.md,
-    color: '#666',
+    color: COLORS.textSecondary,
     marginBottom: 8,
     paddingHorizontal: 16,
     fontFamily: 'Poppins_400Regular',
   },
   queryText: {
     fontFamily: 'Poppins_600SemiBold',
-    color: '#333',
+    color: COLORS.text,
   },
   sortRow: {
     flexDirection: 'row',
@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
   },
   sortText: {
     fontSize: TYPOGRAPHY.fontSize.md,
-    color: '#2B2D42',
+    color: COLORS.borderDark,
     fontWeight: '500',
     fontFamily: 'Poppins_500Medium',
   },

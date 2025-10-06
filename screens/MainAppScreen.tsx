@@ -204,12 +204,12 @@ const MainAppScreen: React.FC<MainAppScreenProps> = () => {
             accessibilityRole="button"
             accessibilityLabel="Search icon"
           >
-            <SearchIcon width={20} height={20} color="#666" />
+          <SearchIcon width={20} height={20} color={COLORS.textSecondary} />
           </TouchableOpacity>
           <TextInput
             style={styles.searchInput}
             placeholder="Search Videos"
-            placeholderTextColor="#999"
+            placeholderTextColor={COLORS.textLight}
             value={searchQuery}
             onChangeText={setSearchQuery}
             onSubmitEditing={handleSearch}
@@ -225,7 +225,7 @@ const MainAppScreen: React.FC<MainAppScreenProps> = () => {
           accessibilityLabel="Settings"
           accessibilityHint="Opens app settings"
         >
-          <SettingsIcon width={24} height={24} color="#333" />
+          <SettingsIcon width={24} height={24} color={COLORS.text} />
         </TouchableOpacity>
       </View>
 
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     paddingHorizontal: 4,
     borderBottomWidth: 1,
-    borderBottomColor: '#2B2D42',
+    borderBottomColor: COLORS.borderDark,
     paddingBottom: SPACING.padding.lg,
   },
   categoryHeader: {
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
   videoTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#000',
+    color: COLORS.black,
     marginTop: 8,
     lineHeight: 20,
     fontFamily: 'Poppins_600SemiBold',
@@ -319,27 +319,27 @@ const styles = StyleSheet.create({
   showMoreText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#2B2D42',
+    color: COLORS.borderDark,
     textDecorationLine: 'underline',
     fontFamily: 'Poppins_500Medium',
   },
   skeletonThumbnail: {
     width: 180,
     height: 112,
-    backgroundColor: '#E0E0E0',
+    backgroundColor: COLORS.skeleton,
     borderRadius: SPACING.borderRadius.lg,
     marginBottom: SPACING.margin.sm,
   },
   skeletonTitle: {
     height: 16,
-    backgroundColor: '#E0E0E0',
+    backgroundColor: COLORS.skeleton,
     borderRadius: 4,
     marginBottom: 4,
     width: '80%',
   },
   skeletonDate: {
     height: 12,
-    backgroundColor: '#E0E0E0',
+    backgroundColor: COLORS.skeleton,
     borderRadius: 4,
     width: '60%',
   },
