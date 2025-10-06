@@ -16,16 +16,15 @@ export {
 export { default as SortModal } from './SortModal';
 
 
-export { 
-  SearchIcon, 
-  SettingsIcon, 
-  HomeIcon, 
-  BackArrowIcon, 
-  ViewsIcon, 
-  LikesIcon, 
-  FullscreenIcon,
-  PersonIcon
-} from './SvgIcon';
 
 export { useSortModal } from './useSortModal';
 export { useYouTubeApi } from './useYouTubeApi';
+
+export { default as SearchIcon } from './icons/SearchIcon';
+export { default as SettingsIcon } from './icons/SettingsIcon';
+export { default as HomeIcon } from './icons/HomeIcon';
+export { default as BackArrowIcon } from './icons/BackArrowIcon';
+export { default as ViewsIcon } from './icons/ViewsIcon';
+export { default as LikesIcon } from './icons/LikesIcon';
+export { default as FullscreenIcon } from './icons/FullscreenIcon';
+export { default as PersonIcon } from './icons/PersonIcon';

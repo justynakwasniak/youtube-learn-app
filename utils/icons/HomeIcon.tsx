@@ -1,0 +1,39 @@
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
+
+interface SvgIconProps {
+  width?: number;
+  height?: number;
+  color?: string;
+  style?: any;
+}
+
+const HomeIcon: React.FC<SvgIconProps> = ({ 
+  width = 24, 
+  height = 24, 
+  color = '#2B2D42',
+  style 
+}) => (
+  <View style={[styles.container, style]}>
+    <Svg width={width} height={height} viewBox="0 0 32 32" fill="none">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M16.8186 1.61424C16.3371 1.23975 15.663 1.23975 15.1815 1.61424L3.18143 10.9476C2.85665 11.2002 2.66669 11.5886 2.66669 12V26.6667C2.66669 28.1395 3.86059 29.3334 5.33335 29.3334H26.6667C28.1395 29.3334 29.3334 28.1395 29.3334 26.6667V12C29.3334 11.5886 29.1434 11.2002 28.8186 10.9476L16.8186 1.61424ZM21.3334 26.6667H26.6667V12.6521L16 4.35585L5.33335 12.6521V26.6667H10.6667V16C10.6667 15.2636 11.2636 14.6667 12 14.6667H20C20.7364 14.6667 21.3334 15.2636 21.3334 16V26.6667ZM13.3334 26.6667V17.3334H18.6667V26.6667H13.3334Z"
+        fill={color}
+      />
+    </Svg>
+  </View>
+);
+
+export default HomeIcon;
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+
+
