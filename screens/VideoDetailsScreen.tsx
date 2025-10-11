@@ -378,6 +378,6 @@ const styles = StyleSheet.create({
   likedButton: { backgroundColor: '#FFE5E5' },
   statIcon: { marginRight: normalize(6) },
   statText: { fontSize: normalize(14) },
-  likedText: { color: COLORS.error },
+  likedText: { color: '#FFFFFF' },
 });
 

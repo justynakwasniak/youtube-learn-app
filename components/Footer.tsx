@@ -39,7 +39,7 @@ export default Footer;
 const styles = StyleSheet.create({
   footer: {
     flexDirection: 'row',
-    backgroundColor: '#101114',
+    backgroundColor: '#8D99AE',
     borderTopWidth: 1,
     borderTopColor: COLORS.border,
     paddingVertical: 12,
