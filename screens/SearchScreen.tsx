@@ -17,14 +17,17 @@ import {
   mockChannels, 
   ExtendedVideo, 
   Channel,
-  SortModal,
   useSortModal,
-  SearchIcon,
-  BackArrowIcon
+  SortModal,
+ 
 } from '../utils';
 import { useYouTubeApi } from '../utils';
 import { COLORS, TYPOGRAPHY, SPACING, commonStyles } from '../styles';
 import { useTranslation } from 'react-i18next';
+import SearchResultItem from '../components/SearchResultItem';
+import SearchBar from '../components/SearchBar';
+import { useSortVideos } from '../hooks/useSortVideos';
+import { useSearchVideos } from '../hooks/useSearchVideos';
 
 interface SearchScreenProps {}
 
@@ -48,27 +51,24 @@ const SearchScreen: React.FC<SearchScreenProps> = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const { query, category } = useLocalSearchParams();
+ 
   const { searchVideos } = useYouTubeApi();
   const [searchQuery, setSearchQuery] = useState(Array.isArray(query) ? query[0] || '' : query || '');
-  const [searchResults, setSearchResults] = useState(extendedMockSearchResults.slice(0, 2));
-  const [isLoading, setIsLoading] = useState(false);
+ 
   
   const {
     showSortModal,
     selectedSortOption,
     handleSortPress,
+    handleCloseModal,
     handleSortOptionSelect,
     handleConfirmSort,
-    handleCloseModal,
-  } = useSortModal();
-
-  useEffect(() => {
-    const searchTerm = Array.isArray(query) ? query[0] : query || (Array.isArray(category) ? category[0] : category);
-    
-    if (searchTerm) {
-      performSearch(searchTerm); 
-    }
-  }, [query, category, selectedSortOption]);
+  } = useSortVideos();
+  
+  
+  
+  
+  
   
   const formatYouTubeResults = useCallback((results: YouTubeSearchResult): ExtendedVideo[] => {
     return results.items?.map((item) => ({
@@ -97,36 +97,21 @@ const SearchScreen: React.FC<SearchScreenProps> = () => {
     }
   }, [category, query]);
 
-  const performSearch = useCallback(async (searchTerm: string): Promise<void> => {
-    if (!searchTerm) return;
-    
-    setIsLoading(true);
   
-    try {
-      const results = await searchVideos.call(searchTerm, selectedSortOption) as YouTubeSearchResult;
-      const formattedResults = formatYouTubeResults(results);
-  
-      if (formattedResults.length === 0) {
-        setSearchResults(getFallbackResults(searchTerm));
-      } else {
-        setSearchResults(formattedResults);
-      }
-    } catch (error) {
-      console.error('Search error:', error);
-      setSearchResults(getFallbackResults(searchTerm));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [selectedSortOption, formatYouTubeResults, getFallbackResults, searchVideos]);
-  
+  const { results: searchResults, isLoading } = useSearchVideos(
+    formatYouTubeResults,
+    getFallbackResults,
+    searchQuery,
+    selectedSortOption,
+  );
   
 
   const handleSearch = useCallback((): void => {
     const trimmedQuery = typeof searchQuery === 'string' ? searchQuery.trim() : '';
     if (trimmedQuery && trimmedQuery.length > 0) {
-      performSearch(trimmedQuery);
     }
-  }, [searchQuery, performSearch]);
+  }, [searchQuery]);
+  
 
   const handleBack = useCallback((): void => {
     router.back();
@@ -147,26 +132,9 @@ const SearchScreen: React.FC<SearchScreenProps> = () => {
 
 
   const renderSearchResult = useCallback((video: ExtendedVideo) => (
-    <TouchableOpacity 
-      key={video.id} 
-      style={styles.searchResult}
-      onPress={() => handleVideoPress(video)}
-      accessibilityRole="button"
-      accessibilityLabel={`Watch video: ${video.title}`}
-      accessibilityHint="Opens video details"
-    >
-      <Image 
-        source={{ uri: video.thumbnail }} 
-        style={styles.resultThumbnail}
-        accessibilityLabel={`Thumbnail for ${video.title}`}
-      />
-      <View style={styles.resultInfo}>
-        <Text style={styles.resultChannel} numberOfLines={1}>{video.channelTitle}</Text>
-        <Text style={styles.resultDescription} numberOfLines={2}>{video.description}</Text>
-        <Text style={styles.resultViews}>{video.publishedAt}</Text>
-      </View>
-    </TouchableOpacity>
+    <SearchResultItem key={video.id} video={video} onPress={handleVideoPress} />
   ), [handleVideoPress]);
+  
 
   const memoizedSearchResults = useMemo(() => 
     searchResults.map(renderSearchResult), 
@@ -184,21 +152,13 @@ const SearchScreen: React.FC<SearchScreenProps> = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         
-        <View style={styles.searchContainer}>
-          <SearchIcon width={20} height={20} color={COLORS.borderDark} style={styles.searchIconLeft} />
-          <TextInput
-            style={styles.searchInput}
-            placeholder={t('common.search') + ' Videos'}
-            placeholderTextColor={COLORS.textLight}
-            value={typeof searchQuery === 'string' ? searchQuery : ''}
-            onChangeText={setSearchQuery}
-            onSubmitEditing={handleSearch}
-            returnKeyType="search"
-            autoFocus
-            accessibilityLabel="Search videos"
-            accessibilityHint="Enter search terms to find videos"
-          />
-        </View>
+      <SearchBar
+  value={typeof searchQuery === 'string' ? searchQuery : ''}
+  onChangeText={setSearchQuery}
+  onSearch={handleSearch}
+  placeholder={t('common.search') + ' Videos'}
+/>
+
       </View>
 
       <ScrollView style={styles.content}>
@@ -266,17 +226,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: COLORS.primary,
   },
-  searchContainer: commonStyles.searchContainer,
-  searchInput: commonStyles.searchInput,
-  searchButton: {
-    padding: SPACING.padding.sm,
-  },
-  searchIconLeft: {
-    marginRight: 8,
-  },
-  searchIcon: {
-    fontSize: TYPOGRAPHY.fontSize.lg,
-  },
+  
+ 
   content: {
     flex: 1,
   },

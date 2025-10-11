@@ -4,6 +4,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { COLORS, TYPOGRAPHY, SPACING, commonStyles } from '../styles';
 import { useTranslation } from 'react-i18next';
+import { useExternalLink } from '../hooks/useExternalLink';
+import { Dimensions, PixelRatio } from 'react-native';
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+
+const scale = (size: number) => (SCREEN_WIDTH / 375) * size;
+
+const normalizeFont = (size: number) => {
+  const newSize = scale(size);
+  return Math.round(PixelRatio.roundToNearestPixel(newSize));
+};
+
 
 const TERMS_URL = 'https://www.google.com';
 const PRIVACY_URL = 'https://www.google.com';
@@ -15,30 +27,20 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
   const router = useRouter();
   
   const handleGuestLogin = (): void => {
-    router.push('/main-app');
-  };
-
-  const handleLinkPress = async (url: string, linkName: string): Promise<void> => {
+    console.log('Navigating to mainapp...');
     try {
-      const supported = await Linking.canOpenURL(url);
-      if (supported) {
-        await Linking.openURL(url);
-      } else {
-        Alert.alert('Error', `Cannot open ${linkName} link`);
-      }
+      router.push({ pathname: '/mainapp' });
     } catch (error) {
-      console.error(`Error opening ${linkName}:`, error);
-      Alert.alert('Error', `Failed to open ${linkName}`);
+      console.error('Navigation error:', error);
+      router.push('/mainapp');
     }
   };
 
-  const handleTermsPress = (): void => {
-    handleLinkPress(TERMS_URL, 'Terms and Conditions');
-  };
+ const { openLink } = useExternalLink();
 
-  const handlePrivacyPress = (): void => {
-    handleLinkPress(PRIVACY_URL, 'Privacy Policy');
-  };
+const handleTermsPress = () => openLink(TERMS_URL, 'Terms and Conditions');
+const handlePrivacyPress = () => openLink(PRIVACY_URL, 'Privacy Policy');
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -111,7 +113,7 @@ export default LoginScreen;
 
 
 const LOGIN_COLORS = {
-  background: COLORS.mutedBackground,
+  background: '#101114',
   primary: COLORS.borderDark,
   white: COLORS.white,
   text: COLORS.white,
@@ -137,7 +139,7 @@ const styles = StyleSheet.create({
     backgroundColor: LOGIN_COLORS.background,
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
+    paddingHorizontal: scale(20),
     paddingVertical: 40,
   },
   logoContainer: {
@@ -146,8 +148,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   logo: {
-    width: LOGIN_SIZES.logo.width,
-    height: LOGIN_SIZES.logo.height,
+    width: scale(292),
+    height: scale(116),
   },
   iconContainer: {
     flex: 1,
@@ -155,21 +157,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   centerIcon: {
-    width: LOGIN_SIZES.icon.width,
-    height: LOGIN_SIZES.icon.height,
+    width: scale(128),
+    height: scale(128),
   },
   welcomeContainer: {
     alignItems: 'flex-start',
     alignSelf: 'flex-start',
-    marginBottom: 30,
+    marginBottom: scale(30),
     paddingHorizontal: 20,
   },
   welcomeText: {
-    fontSize: 18,
+    fontSize: normalizeFont(18),
     fontWeight: '600',
     textAlign: 'left',
     color: LOGIN_COLORS.text,
-    lineHeight: 24,
+    lineHeight: normalizeFont(24),
     fontFamily: 'Poppins_600SemiBold',
   },
   buttonContainer: {
@@ -186,7 +188,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: LOGIN_COLORS.white,
-    fontSize: 16,
+    fontSize: normalizeFont(16),
     fontWeight: '600',
     fontFamily: 'Poppins_600SemiBold',
   },
@@ -195,7 +197,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   termsText: {
-    fontSize: 12,
+    fontSize: normalizeFont(12),
     color: LOGIN_COLORS.text,
     textAlign: 'center',
     lineHeight: 16,

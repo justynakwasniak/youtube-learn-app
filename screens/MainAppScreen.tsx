@@ -24,8 +24,13 @@ import {
 import { useYouTubeApi } from '../utils';
 import { COLORS, TYPOGRAPHY, SPACING, commonStyles } from '../styles';
 import { useTranslation } from 'react-i18next';
+import VideoThumbnail from '../components/VideoThumbnail';
+import CategorySection from '../components/CategorySection';
+import { useVideosLoader } from '../hooks/useVideosLoader';
+
 
 const { width } = Dimensions.get('window');
+import SearchBar from '../components/SearchBar';
 
 interface MainAppScreenProps {}
 
@@ -46,14 +51,11 @@ interface YouTubeSearchResult {
 const MainAppScreen: React.FC<MainAppScreenProps> = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const { getVideosByCategory } = useYouTubeApi();
   const [searchQuery, setSearchQuery] = useState('');
-  const [videosData, setVideosData] = useState(mockVideos);
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    loadVideosFromAPI();
-  }, []);
+
+  const { videosData, isLoading } = useVideosLoader();
+  
 
   const formatYouTubeResults = useCallback((results: YouTubeSearchResult): Video[] => {
     return results.items?.slice(0, MAX_VIDEOS_PER_CATEGORY).map((item) => ({
@@ -64,45 +66,6 @@ const MainAppScreen: React.FC<MainAppScreenProps> = () => {
     })) || [];
   }, []);
 
-  const loadVideosFromAPI = useCallback(async (): Promise<void> => {
-    setIsLoading(true);
-    try {
-      const videosByCategory: VideosByCategory = {};
-      
-      const categoryPromises = CATEGORIES.map(async (category) => {
-        try {
-          const results = await getVideosByCategory.call(category) as YouTubeSearchResult;
-          const formattedVideos = formatYouTubeResults(results);
-          
-          return {
-            category,
-            videos: formattedVideos.length > 0 ? formattedVideos : mockVideos[category]
-          };
-        } catch (error) {
-          console.error(`Error loading ${category}:`, error);
-          return {
-            category,
-            videos: mockVideos[category]
-          };
-        }
-      });
-
-      const results = await Promise.allSettled(categoryPromises);
-      
-      results.forEach((result) => {
-        if (result.status === 'fulfilled') {
-          videosByCategory[result.value.category] = result.value.videos;
-        }
-      });
-      
-      setVideosData(videosByCategory);
-    } catch (error) {
-      console.error('Error loading videos:', error);
-      setVideosData(mockVideos);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [formatYouTubeResults, getVideosByCategory]);
 
   const handleSearch = useCallback((): void => {
     const trimmedQuery = searchQuery.trim();
@@ -146,51 +109,28 @@ const MainAppScreen: React.FC<MainAppScreenProps> = () => {
     </View>
   ), []);
 
-  const renderVideoThumbnail = useCallback((video: Video) => (
-    <TouchableOpacity 
-      key={video.id} 
-      style={styles.videoThumbnail}
-      onPress={() => handleVideoPress(video)}
-      accessibilityRole="button"
-      accessibilityLabel={`Watch video: ${video.title}`}
-          accessibilityHint={t('common.showMore')}
-    >
-      <Image 
-        source={{ uri: video.thumbnail }} 
-        style={styles.thumbnailImage}
-        accessibilityLabel={`Thumbnail for ${video.title}`}
+  const renderVideoThumbnail = useCallback(
+    (video: Video) => (
+      <VideoThumbnail key={video.id} video={video} onPress={handleVideoPress} />
+    ),
+    [handleVideoPress]
+  );
+  
+
+  const renderCategory = useCallback(
+    (categoryName: string, videos: Video[]) => (
+      <CategorySection
+        key={categoryName}
+        title={categoryName}
+        videos={videos}
+        onShowMore={handleShowMore}
+        onVideoPress={handleVideoPress}
+        isLoading={isLoading}
       />
-      <Text style={styles.videoTitle} numberOfLines={2}>{video.title || 'No Title'}</Text>
-      <Text style={styles.videoViews}>{video.publishedAt}</Text>
-    </TouchableOpacity>
-  ), [handleVideoPress]);
-
-  const renderCategory = useCallback((categoryName: string, videos: Video[]) => (
-    <View key={categoryName} style={styles.categoryContainer}>
-      <View style={styles.categoryHeader}>
-        <Text style={styles.categoryTitle}>{categoryName}</Text>
-        <TouchableOpacity
-          style={styles.showMoreLink}
-          onPress={() => handleShowMore(categoryName)}
-          accessibilityRole="button"
-          accessibilityLabel={`Show more ${categoryName} videos`}
-          accessibilityHint="Opens search results for this category"
-        >
-          <Text style={styles.showMoreText}>{t('common.showMore')}</Text>
-        </TouchableOpacity>
-      </View>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.horizontalScroll}
-        contentContainerStyle={styles.scrollContent}
-        accessibilityLabel={`${categoryName} videos`}
-      >
-        {isLoading ? Array.from({ length: 4 }, (_, index) => renderSkeletonVideo()) : videos.map(renderVideoThumbnail)}
-      </ScrollView>
-    </View>
-  ), [handleShowMore, renderVideoThumbnail, renderSkeletonVideo, isLoading]);
-
+    ),
+    [handleShowMore, handleVideoPress, isLoading]
+  );
+  
   const categoriesList = useMemo(() => 
     Object.entries(videosData).map(([category, videos]) => 
       renderCategory(category, videos)
@@ -200,26 +140,13 @@ const MainAppScreen: React.FC<MainAppScreenProps> = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <View style={styles.searchContainer}>
-          <TouchableOpacity
-            style={styles.searchIcon}
-            accessibilityRole="button"
-            accessibilityLabel="Search icon"
-          >
-          <SearchIcon width={20} height={20} color={COLORS.textSecondary} />
-          </TouchableOpacity>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search Videos"
-            placeholderTextColor={COLORS.textLight}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            onSubmitEditing={handleSearch}
-            returnKeyType="search"
-            accessibilityLabel="Search videos"
-            accessibilityHint="Enter search terms to find videos"
-          />
-        </View>
+      <SearchBar
+  value={searchQuery}
+  onChangeText={setSearchQuery}
+  onSearch={handleSearch}
+  placeholder={t('Search Videos')}
+/>
+
         <TouchableOpacity
           style={styles.settingsButton}
           onPress={handleSettings}

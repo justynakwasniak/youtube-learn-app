@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@expo-google-fonts/poppins": "^0.4.1",
+    "@tanstack/react-query": "^5.90.2",
+    "@tanstack/react-query-devtools": "^5.90.2",
     "@types/react-native": "^0.72.8",
     "axios": "^1.12.2",
     "babel-plugin-dotenv-import": "^3.0.1",

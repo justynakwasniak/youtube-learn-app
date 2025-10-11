@@ -14,10 +14,10 @@ export const MAX_VIDEOS_PER_CATEGORY = 4;
 
 export const mockVideos: VideosByCategory = {
   'React Native': [
-    { id: 1, title: 'React Native Tutorial', thumbnail: 'https://via.placeholder.com/200x120/FF6B6B/FFFFFF?text=RN+1', publishedAt: '2024-01-15' },
-    { id: 2, title: 'Navigation in React Native', thumbnail: 'https://via.placeholder.com/200x120/4ECDC4/FFFFFF?text=RN+2', publishedAt: '2024-01-10' },
-    { id: 3, title: 'State Management', thumbnail: 'https://via.placeholder.com/200x120/45B7D1/FFFFFF?text=RN+3', publishedAt: '2024-01-05' },
-    { id: 4, title: 'React Native Performance', thumbnail: 'https://via.placeholder.com/200x120/96CEB4/FFFFFF?text=RN+4', publishedAt: '2023-12-28' },
+    { id: 'dQw4w9WgXcQ', title: 'React Native Tutorial - Getting Started', thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/mqdefault.jpg', publishedAt: '2024-01-15' },
+    { id: 'jNQXAC9IVRw', title: 'Navigation in React Native', thumbnail: 'https://img.youtube.com/vi/jNQXAC9IVRw/mqdefault.jpg', publishedAt: '2024-01-10' },
+    { id: 'M7lc1UVf-VE', title: 'State Management with Redux', thumbnail: 'https://img.youtube.com/vi/M7lc1UVf-VE/mqdefault.jpg', publishedAt: '2024-01-05' },
+    { id: 'YQHsXMglC9A', title: 'React Native Performance Tips', thumbnail: 'https://img.youtube.com/vi/YQHsXMglC9A/mqdefault.jpg', publishedAt: '2023-12-28' },
   ],
   'React': [
     { id: 5, title: 'React Hooks Explained', thumbnail: 'https://via.placeholder.com/200x120/FFEAA7/FFFFFF?text=React+1', publishedAt: '2024-01-20' },

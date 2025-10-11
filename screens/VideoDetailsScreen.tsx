@@ -21,8 +21,15 @@ import {
 } from '../utils';
 import { useYouTubeApi } from '../utils';
 import { COLORS, TYPOGRAPHY, SPACING, commonStyles } from '../styles';
+import {PixelRatio } from 'react-native';
+import { useQuery } from '@tanstack/react-query';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
+
+const scale = width / 375;
+export const normalize = (size: number) => Math.round(PixelRatio.roundToNearestPixel(size * scale));
+
+
 
 interface VideoDetailsScreenProps {}
 
@@ -57,9 +64,6 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
   const { getVideoDetails } = useYouTubeApi();
 
   const [isBuffering, setIsBuffering] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [videoDetails, setVideoDetails] = useState<VideoDetails | null>(null);
-
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [likes, setLikes] = useState<number>(12500);
   const [isLiked, setIsLiked] = useState<boolean>(false);
@@ -80,28 +84,22 @@ const VideoDetailsScreen: React.FC<VideoDetailsScreenProps> = () => {
     };
   }, []);
 
+  const { data: videoDetails, isLoading } = useQuery({
+    queryKey: ['videoDetails', videoId],
+    queryFn: async () => {
+      if (!videoId) return null;
+      const details = await getVideoDetails.call(videoId as string) as YouTubeVideoDetailsResult;
+      return formatYouTubeVideoDetails(details);
+    },
+    enabled: !!videoId,
+    staleTime: 5 * 60 * 1000,
+  });
+
   useEffect(() => {
-    const fetchVideoDetails = async (): Promise<void> => {
-      if (!videoId) return;
-
-      setIsLoading(true);
-      try {
-        const details = await getVideoDetails.call(videoId as string) as YouTubeVideoDetailsResult;
-        const formattedDetails = formatYouTubeVideoDetails(details);
-        
-        if (formattedDetails) {
-          setVideoDetails(formattedDetails);
-          setLikes(parseInt(formattedDetails.likeCount) || 12500);
-        }
-      } catch (error) {
-        console.error('Error fetching video details:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchVideoDetails();
-  }, [videoId, formatYouTubeVideoDetails, getVideoDetails]);
+    if (videoDetails && videoDetails.likeCount) {
+      setLikes(parseInt(videoDetails.likeCount) || 12500);
+    }
+  }, [videoDetails]);
 
   const handleBack = useCallback((): void => {
     router.back();
@@ -281,8 +279,13 @@ const styles = StyleSheet.create({
     color: COLORS.primary 
   },
   content: { flex: 1 },
-  videoContainer: { width: '100%', height: 220, backgroundColor: COLORS.black },
+  videoContainer: { 
+    width: '100%', 
+    height: width * 0.56,
+    backgroundColor: COLORS.black 
+  },
   video: { width: '100%', height: '100%' },
+  
   fullscreenButton: {
     position: 'absolute',
     bottom: 10,
@@ -362,7 +365,7 @@ const styles = StyleSheet.create({
     borderBottomColor: COLORS.border,
   },
   statisticsTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 12 },
-  statsButtons: { flexDirection: 'row', justifyContent: 'space-around' },
+  statsButtons: { flexDirection: 'row', justifyContent: 'space-between' },
   statButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -373,8 +376,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   likedButton: { backgroundColor: '#FFE5E5' },
-  statIcon: { fontSize: 16, marginRight: 6, marginLeft: -8 },
-  statText: { fontSize: 14, fontWeight: '500', color: COLORS.white },
+  statIcon: { marginRight: normalize(6) },
+  statText: { fontSize: normalize(14) },
   likedText: { color: COLORS.error },
 });
 

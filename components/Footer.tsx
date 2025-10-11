@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 import { useRouter } from 'expo-router';
-import { HomeIcon, SearchIcon, COLORS } from '../utils';
+import { COLORS } from '../styles';
 import { useTranslation } from 'react-i18next';
 
 const Footer = () => {
@@ -11,7 +11,7 @@ const Footer = () => {
 
   const handleHomePress = () => {
     setPressedButton('home');
-    router.push('/main-app');
+    router.push('/mainapp');
   };
 
   const handleSearchPress = () => {
@@ -22,20 +22,12 @@ const Footer = () => {
   return (
     <View style={styles.footer}>
       <TouchableOpacity style={styles.footerItem} onPress={handleHomePress}>
-        <HomeIcon 
-          width={32} 
-          height={32} 
-          color={pressedButton === 'home' ? COLORS.white : COLORS.borderDark} 
-        />
+        <Text style={[styles.footerText, { fontSize: 20 }]}>🏠</Text>
         <Text style={styles.footerText}>{t('common.home')}</Text>
       </TouchableOpacity>
       
       <TouchableOpacity style={styles.footerItem} onPress={handleSearchPress}>
-        <SearchIcon 
-          width={32} 
-          height={32} 
-          color={pressedButton === 'search' ? COLORS.white : COLORS.borderDark} 
-        />
+        <Text style={[styles.footerText, { fontSize: 20 }]}>🔍</Text>
         <Text style={styles.footerText}>{t('common.search')}</Text>
       </TouchableOpacity>
     </View>
@@ -47,7 +39,7 @@ export default Footer;
 const styles = StyleSheet.create({
   footer: {
     flexDirection: 'row',
-    backgroundColor: COLORS.mutedBackground,
+    backgroundColor: '#101114',
     borderTopWidth: 1,
     borderTopColor: COLORS.border,
     paddingVertical: 12,

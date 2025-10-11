@@ -85,6 +85,7 @@ i18n
     lng: 'en',
     fallbackLng: 'en',
     interpolation: { escapeValue: false },
+    compatibilityJSON: 'v3',
   });
 
 export default i18n;
