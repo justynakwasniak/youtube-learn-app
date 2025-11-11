@@ -1,5 +1,18 @@
 ## September App — setup and development
 
+📱 About the Project
+
+This is a React Native mobile application I developed as part of a technical interview task for a company.
+The app is a YouTube-like simulation, allowing users to browse and watch videos fetched from the YouTube API.
+
+It retrieves videos related to specific keywords — React, React Native, JavaScript, and TypeScript — and displays them in a simple, user-friendly interface.
+
+For video playback, I used the React Native Video library.
+
+After receiving feedback from the reviewers, I implemented best coding practices and improved the project according to their recommendations.
+
+The design of the application was based on screens provided in Figma.
+
 A short guide to install dependencies and run the app (Expo, React Native).
 
 ### Prerequisites
